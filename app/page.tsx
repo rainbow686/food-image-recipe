@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from "react";
 
-const FAL_KEY = "89197a8d-be7d-4c5b-934c-2f3d12c7b772:3f8d26a3ca1673a30d49d1e4be46caf3";
-
 const styles = {
   dark: {
     bg: "transparent",
@@ -91,17 +89,15 @@ export default function Home() {
           ? "请详细描述这张食物图片。你能识别出有哪些食材吗？请用中文回答，最多200字。"
           : "Please describe this food image. What ingredients can you identify? Answer in English, max 200 words.";
 
-      const llavaResponse = await fetch("https://queue.fal.ai/fal-ai/llava-next", {
+      const llavaResponse = await fetch("/api/fal", {
         method: "POST",
         headers: {
-          Authorization: `Key ${FAL_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           image_url: currentImageUrl,
           prompt: llavaPrompt,
-          max_tokens: 300,
-          temperature: 0.7,
+          model: 'llava',
         }),
       });
 
@@ -126,16 +122,14 @@ export default function Home() {
           ? `根据以下食材描述，生成一个简短的中文食谱：${foodDescription}\n\n请包含：菜名、食材清单、3-5个简单步骤。`
           : `Based on the following ingredients, generate a brief recipe in English: ${foodDescription}\n\nInclude: dish name, ingredients list, 3-5 simple steps.`;
 
-      const recipeResponse = await fetch("https://queue.fal.ai/fal-ai/qwen2-5-coder-32b-instruct", {
+      const recipeResponse = await fetch("/api/fal", {
         method: "POST",
         headers: {
-          Authorization: `Key ${FAL_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           prompt: recipePrompt,
-          max_tokens: 500,
-          temperature: 0.7,
+          model: 'qwen',
         }),
       });
 

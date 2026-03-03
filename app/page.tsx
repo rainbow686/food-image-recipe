@@ -236,8 +236,8 @@ export default function Home() {
                   });
                   const data = await res.json();
                   alert('Status: ' + res.status + '\n' + JSON.stringify(data).substring(0, 200));
-                } catch (e) {
-                  alert('Error: ' + e.message);
+                } catch (e: any) {
+                  alert('Error: ' + (e?.message || e));
                 }
               }}
               className="btn-secondary text-xs px-3 py-1"

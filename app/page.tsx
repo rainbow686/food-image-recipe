@@ -4,6 +4,35 @@ import { useState, useEffect } from "react";
 
 const FAL_KEY = "89197a8d-be7d-4c5b-934c-2f3d12c7b772:3f8d26a3ca1673a30d49d1e4be46caf3";
 
+const styles = {
+  dark: {
+    bg: "transparent",
+    bgSecondary: "rgba(255, 255, 255, 0.05)",
+    bgTertiary: "rgba(255, 255, 255, 0.08)",
+    text: "#ffffff",
+    textSecondary: "rgba(255, 255, 255, 0.7)",
+    textMuted: "rgba(255, 255, 255, 0.5)",
+    border: "rgba(255, 255, 255, 0.1)",
+    accent: "#10b981",
+    accentSoft: "rgba(16, 185, 129, 0.15)",
+    cardBg: "rgba(255, 255, 255, 0.08)",
+    gradient: "radial-gradient(ellipse 80% 60% at 20% 10%, rgba(16, 185, 129, 0.25), transparent 50%), radial-gradient(ellipse 60% 50% at 80% 20%, rgba(5, 150, 105, 0.2), transparent 50%), radial-gradient(ellipse 50% 40% at 50% 80%, rgba(16, 185, 129, 0.15), transparent 50%), #0f0f1a",
+  },
+  light: {
+    bg: "transparent",
+    bgSecondary: "rgba(255, 252, 248, 0.7)",
+    bgTertiary: "rgba(218, 119, 86, 0.1)",
+    text: "#2d2420",
+    textSecondary: "#5c4d45",
+    textMuted: "#8b7670",
+    border: "rgba(218, 119, 86, 0.15)",
+    accent: "#da7756",
+    accentSoft: "rgba(218, 119, 86, 0.12)",
+    cardBg: "rgba(255, 255, 255, 0.65)",
+    gradient: "radial-gradient(ellipse 80% 60% at 20% 10%, rgba(218, 119, 86, 0.12), transparent 50%), radial-gradient(ellipse 60% 50% at 80% 20%, rgba(180, 100, 70, 0.08), transparent 50%), radial-gradient(ellipse 50% 40% at 50% 80%, rgba(218, 119, 86, 0.06), transparent 50%), #faf8f5",
+  },
+};
+
 export default function Home() {
   const [theme, setTheme] = useState("dark");
   const [lang, setLang] = useState("zh");
@@ -13,16 +42,18 @@ export default function Home() {
   const [identifiedFood, setIdentifiedFood] = useState("");
   const [recipe, setRecipe] = useState("");
 
+  const s = styles[theme as keyof typeof styles];
+
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") || "dark";
     setTheme(savedTheme);
-    if (savedTheme === "light") {
-      document.body.classList.add("light-mode");
-    }
-
     const savedLang = localStorage.getItem("lang") || "zh";
     setLang(savedLang);
   }, []);
+
+  useEffect(() => {
+    document.body.style.background = s.gradient;
+  }, [theme, s]);
 
   const toggleTheme = () => {
     const newTheme = theme === "dark" ? "light" : "dark";

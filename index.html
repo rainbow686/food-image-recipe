@@ -3,59 +3,162 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Food Image to Recipe Generator | AI 食谱生成器</title>
+  <title>Food Image to Recipe | AI Recipe Generator</title>
   <meta name="description" content="Turn food photos into recipes with AI. Snap a photo, get a complete recipe with ingredients and instructions.">
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-    body { font-family: 'Inter', sans-serif; }
-    .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%); }
-    .card-glow { box-shadow: 0 0 30px rgba(249, 115, 22, 0.15); }
-    .btn-primary { background: linear-gradient(135deg, #f97316, #ea580c); transition: all 0.2s; }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(249, 115, 22, 0.4); }
-    .btn-secondary { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); transition: all 0.2s; }
-    .btn-secondary:hover { background: rgba(255,255,255,0.2); }
-    .spinner { border: 3px solid rgba(255,255,255,0.2); border-top-color: white; border-radius: 50%; width: 20px; height: 20px; animation: spin 0.8s linear infinite; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { 
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+      background: #000; 
+      color: #fff;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    /* Subtle gradient background */
+    .bg-grid {
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 100% 50%, rgba(139, 92, 246, 0.08) 0%, transparent 40%);
+      background-color: #000;
+    }
+    
+    /* Border colors */
+    .border-subtle { border-color: rgba(255, 255, 255, 0.08); }
+    .border-hover:hover { border-color: rgba(255, 255, 255, 0.15); }
+    
+    /* Card styles - minimal */
+    .card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      transition: all 0.2s ease;
+    }
+    .card:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Buttons */
+    .btn-primary {
+      background: #fff;
+      color: #000;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    .btn-primary:hover {
+      background: rgba(255, 255, 255, 0.9);
+      transform: translateY(-1px);
+    }
+    .btn-secondary {
+      background: transparent;
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    /* Text colors */
+    .text-muted { color: rgba(255, 255, 255, 0.5); }
+    .text-muted-2 { color: rgba(255, 255, 255, 0.35); }
+    
+    /* Number badges */
+    .step-num {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Language toggle */
+    .lang-btn {
+      cursor: pointer;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      transition: all 0.15s ease;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.4);
+      border: 1px solid transparent;
+    }
+    .lang-btn:hover {
+      color: rgba(255, 255, 255, 0.7);
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .lang-btn.active {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+    
+    /* Icon circles */
+    .icon-circle {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    
+    /* Gradient text */
+    .text-gradient {
+      background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    /* Spinner */
+    .spinner {
+      border: 2px solid rgba(0, 0, 0, 0.1);
+      border-top-color: #000;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      animation: spin 0.8s linear infinite;
+    }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .fade-in { animation: fadeIn 0.6s ease-out; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    .card-hover { transition: all 0.3s; }
-    .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
-    .pattern-bg { background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0); background-size: 40px 40px; }
-    .gradient-text { background: linear-gradient(135deg, #f97316, #fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .lang-btn { cursor: pointer; padding: 6px 12px; border-radius: 16px; font-size: 13px; transition: all 0.2s; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); }
-    .lang-btn:hover { background: rgba(255,255,255,0.2); }
-    .lang-btn.active { background: #f97316; color: white; }
   </style>
 </head>
-<body class="gradient-bg min-h-screen text-white pattern-bg">
+<body class="bg-grid min-h-screen">
+  
   <!-- Header -->
-  <header class="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-black/30 border-b border-white/10">
-    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-      <a href="#" class="text-xl font-bold flex items-center gap-3">
-        <span class="text-2xl">🍳</span>
-        <span class="zh">AI 食谱生成器</span>
-        <span class="en hidden">RecipeAI</span>
+  <header class="fixed top-0 left-0 right-0 z-50 border-b border-subtle bg-black/50 backdrop-blur-xl">
+    <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="#" class="flex items-center gap-3">
+        <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+          <span class="text-black text-sm">🍳</span>
+        </div>
+        <span class="font-semibold text-sm"><span class="zh">食谱AI</span><span class="en hidden">RecipeAI</span></span>
       </a>
       <nav class="hidden md:flex items-center gap-6">
-        <a href="#how-it-works" class="text-sm text-gray-300 hover:text-white transition-colors">
-          <span class="zh">如何使用</span>
-          <span class="en hidden">How It Works</span>
+        <a href="#how-it-works" class="text-xs text-muted hover:text-white transition-colors">
+          <span class="zh">使用流程</span><span class="en hidden">How It Works</span>
         </a>
-        <a href="#features" class="text-sm text-gray-300 hover:text-white transition-colors">
-          <span class="zh">功能特点</span>
-          <span class="en hidden">Features</span>
+        <a href="#features" class="text-xs text-muted hover:text-white transition-colors">
+          <span class="zh">功能</span><span class="en hidden">Features</span>
         </a>
-        <a href="#use-cases" class="text-sm text-gray-300 hover:text-white transition-colors">
-          <span class="zh">使用场景</span>
-          <span class="en hidden">Use Cases</span>
-        </a>
-        <a href="#pricing" class="text-sm text-gray-300 hover:text-white transition-colors">
-          <span class="zh">价格</span>
-          <span class="en hidden">Pricing</span>
+        <a href="#pricing" class="text-xs text-muted hover:text-white transition-colors">
+          <span class="zh">价格</span><span class="en hidden">Pricing</span>
         </a>
       </nav>
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-1">
         <button onclick="switchLang('zh')" class="lang-btn active" id="btnZh">中文</button>
         <button onclick="switchLang('en')" class="lang-btn" id="btnEn">EN</button>
       </div>
@@ -64,61 +167,69 @@
 
   <!-- Hero -->
   <section class="pt-32 pb-20 px-6">
-    <div class="max-w-4xl mx-auto text-center">
-      <div class="inline-flex items-center gap-2 bg-orange-500/20 border border-orange-500/30 rounded-full px-4 py-2 mb-8">
-        <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-        <span class="text-sm text-orange-300">
-          <span class="zh">🔔 即将上线 · 首批用户享受专属优惠</span>
-          <span class="en hidden">🔔 Coming Soon · Early Access Discount</span>
+    <div class="max-w-3xl mx-auto text-center">
+      
+      <!-- Badge -->
+      <div class="inline-flex items-center gap-2 bg-white/5 border border-subtle rounded-full px-3 py-1.5 mb-8">
+        <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full"></span>
+        <span class="text-xs text-muted">
+          <span class="zh">即将上线 · 首批用户专享优惠</span>
+          <span class="en hidden">Coming Soon · Early Access</span>
         </span>
       </div>
-      <div class="text-6xl mb-8">📸 → 📝 → 🍽️</div>
-      <h1 class="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-        <span class="zh">拍照识别食材<br><span class="gradient-text">AI 生成完整食谱</span></span>
-        <span class="en hidden">Snap a Photo<br><span class="gradient-text">Get a Complete Recipe</span></span>
+      
+      <!-- Headline -->
+      <h1 class="text-4xl md:text-5xl font-bold mb-6 leading-tight tracking-tight">
+        <span class="zh">拍照识别食材<br><span class="text-gradient">AI 生成食谱</span></span>
+        <span class="en hidden">Snap a Photo<br><span class="text-gradient">Get a Recipe</span></span>
       </h1>
-      <p class="text-xl text-gray-300 mb-10 max-w-2xl mx-auto leading-relaxed">
-        <span class="zh">上传任何食物照片，AI 自动识别食材并生成包含步骤、时间、营养估算的完整食谱。冰箱剩菜、餐厅美食、社交媒体美食，一键复刻！</span>
-        <span class="en hidden">Upload any food photo and AI will identify ingredients and generate complete recipes with steps, time estimates, and nutrition info.</span>
+      
+      <!-- Subtitle -->
+      <p class="text-base md:text-lg text-muted mb-10 max-w-xl mx-auto leading-relaxed">
+        <span class="zh">上传食物照片，AI 自动识别食材并生成完整食谱。餐厅美食、冰箱剩菜、社交媒体美食，一键复刻！</span>
+        <span class="en hidden">Upload any food photo and AI will identify ingredients and generate complete recipes with steps and instructions.</span>
       </p>
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <a href="#waitlist" class="btn-primary px-8 py-4 rounded-xl font-semibold text-lg inline-flex items-center justify-center gap-2">
-          <span>🚀</span>
-          <span class="zh">立即加入等待列表</span>
-          <span class="en hidden">Join Waitlist - It's Free</span>
+      
+      <!-- CTAs -->
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <a href="#waitlist" class="btn-primary px-6 py-2.5 rounded-lg text-sm inline-flex items-center justify-center gap-2">
+          <span class="zh">免费加入等待列表</span>
+          <span class="en hidden">Join Waitlist - Free</span>
         </a>
-        <a href="#how-it-works" class="btn-secondary px-8 py-4 rounded-xl font-semibold text-lg inline-flex items-center justify-center gap-2">
-          <span>👇</span>
+        <a href="#how-it-works" class="btn-secondary px-6 py-2.5 rounded-lg text-sm inline-flex items-center justify-center gap-2">
           <span class="zh">了解更多</span>
-          <span class="en hidden">See How It Works</span>
+          <span class="en hidden">Learn More</span>
         </a>
       </div>
+      
+      <!-- Demo flow -->
+      <div class="mt-12 text-3xl md:text-4xl opacity-40">📸 → 🤖 → 📝 → 🍽️</div>
     </div>
   </section>
 
   <!-- Stats -->
-  <section class="py-12 px-6 bg-black/20">
-    <div class="max-w-4xl mx-auto">
+  <section class="py-12 px-6 border-y border-subtle">
+    <div class="max-w-2xl mx-auto">
       <div class="grid grid-cols-3 gap-8 text-center">
         <div>
-          <div class="text-3xl font-bold gradient-text">50K+</div>
-          <div class="text-sm text-gray-400 mt-1">
+          <div class="text-2xl font-bold">50K+</div>
+          <div class="text-xs text-muted mt-1">
             <span class="zh">等待用户</span>
-            <span class="en hidden">Waiting Users</span>
+            <span class="en hidden">Waiting</span>
           </div>
         </div>
         <div>
-          <div class="text-3xl font-bold gradient-text">100K+</div>
-          <div class="text-sm text-gray-400 mt-1">
-            <span class="zh">预计生成食谱</span>
-            <span class="en hidden">Recipes to Generate</span>
+          <div class="text-2xl font-bold">100K+</div>
+          <div class="text-xs text-muted mt-1">
+            <span class="zh">食谱生成</span>
+            <span class="en hidden">Generated</span>
           </div>
         </div>
         <div>
-          <div class="text-3xl font-bold gradient-text">98%</div>
-          <div class="text-sm text-gray-400 mt-1">
+          <div class="text-2xl font-bold">98%</div>
+          <div class="text-xs text-muted mt-1">
             <span class="zh">识别准确率</span>
-            <span class="en hidden">Recognition Accuracy</span>
+            <span class="en hidden">Accuracy</span>
           </div>
         </div>
       </div>
@@ -127,45 +238,46 @@
 
   <!-- How It Works -->
   <section id="how-it-works" class="py-20 px-6">
-    <div class="max-w-6xl mx-auto">
-      <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">
-        <span class="zh">如何使用</span>
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-2xl font-bold text-center mb-2">
+        <span class="zh">使用流程</span>
         <span class="en hidden">How It Works</span>
       </h2>
-      <p class="text-gray-400 text-center mb-16 max-w-2xl mx-auto">
+      <p class="text-muted text-center mb-12 text-sm">
         <span class="zh">三步完成，从照片到食谱只需几秒钟</span>
-        <span class="en hidden">Three simple steps, from photo to recipe in seconds</span>
+        <span class="en hidden">Three simple steps</span>
       </p>
-      <div class="grid md:grid-cols-3 gap-8">
-        <div class="text-center card-hover bg-white/5 border border-white/10 rounded-2xl p-8">
-          <div class="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center text-2xl font-bold">1</div>
-          <h3 class="text-xl font-bold mb-3">
+      
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="card p-6">
+          <div class="step-num mb-4">1</div>
+          <h3 class="text-sm font-semibold mb-2">
             <span class="zh">📷 上传照片</span>
             <span class="en hidden">📷 Upload Photo</span>
           </h3>
-          <p class="text-gray-400 text-sm leading-relaxed">
-            <span class="zh">拍照或上传任何食物照片</span>
-            <span class="en hidden">Take a photo or upload any food image</span>
+          <p class="text-xs text-muted leading-relaxed">
+            <span class="zh">拍照或上传食物照片</span>
+            <span class="en hidden">Take or upload any food image</span>
           </p>
         </div>
-        <div class="text-center card-hover bg-white/5 border border-white/10 rounded-2xl p-8">
-          <div class="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center text-2xl font-bold">2</div>
-          <h3 class="text-xl font-bold mb-3">
-            <span class="zh">🤖 AI 智能识别</span>
+        <div class="card p-6">
+          <div class="step-num mb-4">2</div>
+          <h3 class="text-sm font-semibold mb-2">
+            <span class="zh">🤖 AI 识别</span>
             <span class="en hidden">🤖 AI Recognition</span>
           </h3>
-          <p class="text-gray-400 text-sm leading-relaxed">
-            <span class="zh">AI 精准识别食材和菜品</span>
-            <span class="en hidden">AI precisely identifies ingredients and dishes</span>
+          <p class="text-xs text-muted leading-relaxed">
+            <span class="zh">智能识别食材和菜品</span>
+            <span class="en hidden">AI identifies ingredients & dish</span>
           </p>
         </div>
-        <div class="text-center card-hover bg-white/5 border border-white/10 rounded-2xl p-8">
-          <div class="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center text-2xl font-bold">3</div>
-          <h3 class="text-xl font-bold mb-3">
+        <div class="card p-6">
+          <div class="step-num mb-4">3</div>
+          <h3 class="text-sm font-semibold mb-2">
             <span class="zh">📝 获取食谱</span>
             <span class="en hidden">📝 Get Recipe</span>
           </h3>
-          <p class="text-gray-400 text-sm leading-relaxed">
+          <p class="text-xs text-muted leading-relaxed">
             <span class="zh">生成完整食谱</span>
             <span class="en hidden">Get complete recipe</span>
           </p>
@@ -175,190 +287,208 @@
   </section>
 
   <!-- Features -->
-  <section id="features" class="py-20 px-6 bg-white/5">
-    <div class="max-w-6xl mx-auto">
-      <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">
+  <section id="features" class="py-20 px-6 border-t border-subtle">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-2xl font-bold text-center mb-2">
         <span class="zh">核心功能</span>
-        <span class="en hidden">Core Features</span>
+        <span class="en hidden">Features</span>
       </h2>
-      <p class="text-gray-400 text-center mb-16 max-w-2xl mx-auto">
-        <span class="zh">强大的 AI 技术，带来前所未有的食谱生成体验</span>
-        <span class="en hidden">Powerful AI technology for unprecedented recipe experience</span>
+      <p class="text-muted text-center mb-12 text-sm">
+        <span class="zh">强大的 AI 技术</span>
+        <span class="en hidden">Powerful AI technology</span>
       </p>
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="card-hover bg-white/5 border border-white/10 rounded-2xl p-6">
-          <div class="text-3xl mb-4">🔍</div>
-          <h3 class="text-lg font-bold mb-2"><span class="zh">精准食材识别</span><span class="en hidden">Precise Recognition</span></h3>
-          <p class="text-gray-400 text-sm"><span class="zh">识别上百种食材和菜品</span><span class="en hidden">Identify hundreds of ingredients</span></p>
+      
+      <div class="grid md:grid-cols-2 gap-3">
+        <div class="card p-4 flex items-start gap-4">
+          <div class="icon-circle flex-shrink-0">🔍</div>
+          <div>
+            <h3 class="text-sm font-semibold mb-1"><span class="zh">精准识别</span><span class="en hidden">Precise Recognition</span></h3>
+            <p class="text-xs text-muted"><span class="zh">500+ 食材和菜品</span><span class="en hidden">500+ ingredients & dishes</span></p>
+          </div>
         </div>
-        <div class="card-hover bg-white/5 border border-white/10 rounded-2xl p-6">
-          <div class="text-3xl mb-4">⚡</div>
-          <h3 class="text-lg font-bold mb-2"><span class="zh">快速生成</span><span class="en hidden">Fast Generation</span></h3>
-          <p class="text-gray-400 text-sm"><span class="zh">几秒钟完成识别和生成</span><span class="en hidden">Complete in seconds</span></p>
+        <div class="card p-4 flex items-start gap-4">
+          <div class="icon-circle flex-shrink-0">⚡</div>
+          <div>
+            <h3 class="text-sm font-semibold mb-1"><span class="zh">秒级生成</span><span class="en hidden">Instant</span></h3>
+            <p class="text-xs text-muted"><span class="zh">几秒钟完成</span><span class="en hidden">Complete in seconds</span></p>
+          </div>
         </div>
-        <div class="card-hover bg-white/5 border border-white/10 rounded-2xl p-6">
-          <div class="text-3xl mb-4">🌍</div>
-          <h3 class="text-lg font-bold mb-2"><span class="zh">多菜系支持</span><span class="en hidden">Multi-Cuisine</span></h3>
-          <p class="text-gray-400 text-sm"><span class="zh">支持全球美食菜系</span><span class="en hidden">Support global cuisines</span></p>
+        <div class="card p-4 flex items-start gap-4">
+          <div class="icon-circle flex-shrink-0">🌍</div>
+          <div>
+            <h3 class="text-sm font-semibold mb-1"><span class="zh">全球菜系</span><span class="en hidden">Global Cuisines</span></h3>
+            <p class="text-xs text-muted"><span class="zh">中西日韩等</span><span class="en hidden">Chinese, Western, Japanese...</span></p>
+          </div>
         </div>
-        <div class="card-hover bg-white/5 border border-white/10 rounded-2xl p-6">
-          <div class="text-3xl mb-4">📊</div>
-          <h3 class="text-lg font-bold mb-2"><span class="zh">营养估算</span><span class="en hidden">Nutrition</span></h3>
-          <p class="text-gray-400 text-sm"><span class="zh">卡路里营养成分分析</span><span class="en hidden">Calorie & nutrition analysis</span></p>
+        <div class="card p-4 flex items-start gap-4">
+          <div class="icon-circle flex-shrink-0">📊</div>
+          <div>
+            <h3 class="text-sm font-semibold mb-1"><span class="zh">营养分析</span><span class="en hidden">Nutrition</span></h3>
+            <p class="text-xs text-muted"><span class="zh">卡路里估算</span><span class="en hidden">Calories & nutrition</span></p>
+          </div>
         </div>
-        <div class="card-hover bg-white/5 border border-white/10 rounded-2xl p-6">
-          <div class="text-3xl mb-4">📱</div>
-          <h3 class="text-lg font-bold mb-2"><span class="zh">移动优先</span><span class="en hidden">Mobile First</span></h3>
-          <p class="text-gray-400 text-sm"><span class="zh">完美适配手机平板</span><span class="en hidden">Works on any device</span></p>
+        <div class="card p-4 flex items-start gap-4">
+          <div class="icon-circle flex-shrink-0">📱</div>
+          <div>
+            <h3 class="text-sm font-semibold mb-1"><span class="zh">全平台</span><span class="en hidden">All Platforms</span></h3>
+            <p class="text-xs text-muted"><span class="zh">网页/iOS/Android</span><span class="en hidden">Web, iOS, Android</span></p>
+          </div>
         </div>
-        <div class="card-hover bg-white/5 border border-white/10 rounded-2xl p-6">
-          <div class="text-3xl mb-4">💾</div>
-          <h3 class="text-lg font-bold mb-2"><span class="zh">保存分享</span><span class="en hidden">Save & Share</span></h3>
-          <p class="text-gray-400 text-sm"><span class="zh">一键保存和分享</span><span class="en hidden">One-click save & share</span></p>
+        <div class="card p-4 flex items-start gap-4">
+          <div class="icon-circle flex-shrink-0">💾</div>
+          <div>
+            <h3 class="text-sm font-semibold mb-1"><span class="zh">一键保存</span><span class="en hidden">Save & Share</span></h3>
+            <p class="text-xs text-muted"><span class="zh">收藏和分享</span><span class="en hidden">Save & share recipes</span></p>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
   <!-- Use Cases -->
-  <section id="use-cases" class="py-20 px-6">
-    <div class="max-w-6xl mx-auto">
-      <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">
+  <section class="py-20 px-6 border-t border-subtle">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-2xl font-bold text-center mb-2">
         <span class="zh">使用场景</span>
         <span class="en hidden">Use Cases</span>
       </h2>
-      <p class="text-gray-400 text-center mb-16 max-w-2xl mx-auto">
+      <p class="text-muted text-center mb-12 text-sm">
         <span class="zh">无论什么场景，都能用到</span>
-        <span class="en hidden">Useful in any scenario</span>
+        <span class="en hidden">Useful anywhere</span>
       </p>
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="card-hover bg-gradient-to-br from-orange-500/20 to-red-500/20 border border-orange-500/30 rounded-2xl p-6">
-          <div class="text-4xl mb-4">🧊</div>
-          <h3 class="text-lg font-bold mb-2"><span class="zh">冰箱剩菜</span><span class="en hidden">Leftover Ingredients</span></h3>
-          <p class="text-gray-400 text-sm mb-4"><span class="zh">冰箱里有剩菜？拍照→AI 告诉你能做什么</span><span class="en hidden">Have leftovers? Snap → AI tells you what to cook</span></p>
-          <div class="text-xs text-orange-400"><span class="zh">#减少食物浪费</span><span class="en hidden">#ReduceFoodWaste</span></div>
+      
+      <div class="grid md:grid-cols-3 gap-3">
+        <div class="card p-4">
+          <div class="text-2xl mb-2">🧊</div>
+          <h3 class="text-sm font-semibold mb-1"><span class="zh">冰箱剩菜</span><span class="en hidden">Leftovers</span></h3>
+          <p class="text-xs text-muted"><span class="zh">拍照→AI 告诉你能做什么</span><span class="en hidden">Snap → AI suggests recipe</span></p>
         </div>
-        <div class="card-hover bg-gradient-to-br from-orange-500/20 to-red-500/20 border border-orange-500/30 rounded-2xl p-6">
-          <div class="text-4xl mb-4">🍽️</div>
-          <h3 class="text-lg font-bold mb-2"><span class="zh">餐厅复刻</span><span class="en hidden">Restaurant Copy</span></h3>
-          <p class="text-gray-400 text-sm mb-4"><span class="zh">餐厅好吃？拍照→在家复刻</span><span class="en hidden">Tried great dish? Recreate at home</span></p>
-          <div class="text-xs text-orange-400"><span class="zh">#在家吃大餐</span><span class="en hidden">#HomeCooking</span></div>
+        <div class="card p-4">
+          <div class="text-2xl mb-2">🍽️</div>
+          <h3 class="text-sm font-semibold mb-1"><span class="zh">餐厅复刻</span><span class="en hidden">Restaurant</span></h3>
+          <p class="text-xs text-muted"><span class="zh">好吃？在家复刻</span><span class="en hidden">Recreate at home</span></p>
         </div>
-        <div class="card-hover bg-gradient-to-br from-orange-500/20 to-red-500/20 border border-orange-500/30 rounded-2xl p-6">
-          <div class="text-4xl mb-4">🎵</div>
-          <h3 class="text-lg font-bold mb-2"><span class="zh">社交媒体</span><span class="en hidden">Social Media</span></h3>
-          <p class="text-gray-400 text-sm mb-4"><span class="zh">看到美食推荐？粘贴链接→自动提取</span><span class="en hidden">Saw food video? Paste link → auto extract</span></p>
-          <div class="text-xs text-orange-400"><span class="zh">#跟博主学做菜</span><span class="en hidden">#LearnFromBloggers</span></div>
+        <div class="card p-4">
+          <div class="text-2xl mb-2">🎵</div>
+          <h3 class="text-sm font-semibold mb-1"><span class="zh">社交媒体</span><span class="en hidden">Social Media</span></h3>
+          <p class="text-xs text-muted"><span class="zh">链接→自动提取</span><span class="en hidden">Link → Auto extract</span></p>
         </div>
-        <div class="card-hover bg-gradient-to-br from-orange-500/20 to-red-500/20 border border-orange-500/30 rounded-2xl p-6">
-          <div class="text-4xl mb-4">🛒</div>
-          <h3 class="text-lg font-bold mb-2"><span class="zh">买菜灵感</span><span class="en hidden">Shopping Inspiration</span></h3>
-          <p class="text-gray-400 text-sm mb-4"><span class="zh">超市看到新奇食材？拍照→获取食谱</span><span class="en hidden">Saw interesting ingredient? Get recipe ideas</span></p>
-          <div class="text-xs text-orange-400"><span class="zh">#食材探索</span><span class="en hidden">#IngredientExploration</span></div>
+        <div class="card p-4">
+          <div class="text-2xl mb-2">🛒</div>
+          <h3 class="text-sm font-semibold mb-1"><span class="zh">买菜灵感</span><span class="en hidden">Shopping</span></h3>
+          <p class="text-xs text-muted"><span class="zh">新奇食材→食谱</span><span class="en hidden">Ingredient → Recipe</span></p>
         </div>
-        <div class="card-hover bg-gradient-to-br from-orange-500/20 to-red-500/20 border border-orange-500/30 rounded-2xl p-6">
-          <div class="text-4xl mb-4">👨‍👩‍👧</div>
-          <h3 class="text-lg font-bold mb-2"><span class="zh">家庭料理</span><span class="en hidden">Home Cooking</span></h3>
-          <p class="text-gray-400 text-sm mb-4"><span class="zh">每天发愁做什么？AI 推荐一周菜单</span><span class="en hidden">Daily menu suggestions</span></p>
-          <div class="text-xs text-orange-400"><span class="zh">#今日菜单</span><span class="en hidden">#TodaysMenu</span></div>
+        <div class="card p-4">
+          <div class="text-2xl mb-2">👨‍👩‍👧</div>
+          <h3 class="text-sm font-semibold mb-1"><span class="zh">家庭料理</span><span class="en hidden">Home Cooking</span></h3>
+          <p class="text-xs text-muted"><span class="zh">每日菜单推荐</span><span class="en hidden">Daily suggestions</span></p>
         </div>
-        <div class="card-hover bg-gradient-to-br from-orange-500/20 to-red-500/20 border border-orange-500/30 rounded-2xl p-6">
-          <div class="text-4xl mb-4">🥗</div>
-          <h3 class="text-lg font-bold mb-2"><span class="zh">健身饮食</span><span class="en hidden">Fitness Diet</span></h3>
-          <p class="text-gray-400 text-sm mb-4"><span class="zh">控制饮食？AI 生成低卡健康食谱</span><span class="en hidden">Low-calorie healthy recipes</span></p>
-          <div class="text-xs text-orange-400"><span class="zh">#健康生活</span><span class="en hidden">#HealthyLiving</span></div>
+        <div class="card p-4">
+          <div class="text-2xl mb-2">🥗</div>
+          <h3 class="text-sm font-semibold mb-1"><span class="zh">健身饮食</span><span class="en hidden">Fitness</span></h3>
+          <p class="text-xs text-muted"><span class="zh">低卡健康食谱</span><span class="en hidden">Low-calorie recipes</span></p>
         </div>
       </div>
     </div>
   </section>
 
   <!-- Pricing -->
-  <section id="pricing" class="py-20 px-6 bg-white/5">
-    <div class="max-w-4xl mx-auto">
-      <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">
+  <section id="pricing" class="py-20 px-6 border-t border-subtle">
+    <div class="max-w-3xl mx-auto">
+      <h2 class="text-2xl font-bold text-center mb-2">
         <span class="zh">价格方案</span>
         <span class="en hidden">Pricing</span>
       </h2>
-      <p class="text-gray-400 text-center mb-12">
-        <span class="zh">选择最适合你的方案</span>
-        <span class="en hidden">Choose the plan that works best</span>
+      <p class="text-muted text-center mb-10 text-sm">
+        <span class="zh">选择适合你的方案</span>
+        <span class="en hidden">Choose your plan</span>
       </p>
-      <div class="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
-        <div class="bg-white/5 border border-white/10 rounded-2xl p-8">
-          <h3 class="text-xl font-bold mb-2"><span class="zh">免费版</span><span class="en hidden">Free</span></h3>
-          <div class="text-4xl font-bold mb-1">$0 <span class="text-lg font-normal text-gray-400">/forever</span></div>
-          <ul class="space-y-3 mt-6 mb-8 text-sm">
-            <li class="flex items-center gap-2">✅ <span class="zh">每天 3 次</span><span class="en hidden">3/day</span></li>
-            <li class="flex items-center gap-2">✅ <span class="zh">基础食谱</span><span class="en hidden">Basic recipes</span></li>
-            <li class="flex items-center gap-2">✅ <span class="zh">中英文</span><span class="en hidden">CN/EN</span></li>
-            <li class="flex items-center gap-2 opacity-50">❌ <span class="zh">营养估算</span><span class="en hidden">Nutrition</span></li>
+      
+      <div class="grid md:grid-cols-2 gap-4 max-w-lg mx-auto">
+        <div class="card p-6">
+          <h3 class="text-sm font-semibold mb-1"><span class="zh">免费版</span><span class="en hidden">Free</span></h3>
+          <div class="text-2xl font-bold mb-4">$0 <span class="text-xs font-normal text-muted">/forever</span></div>
+          <ul class="space-y-2 mb-6 text-xs">
+            <li class="flex items-center gap-2 text-muted">✅ <span class="zh">每天 3 次</span><span class="en hidden">3/day</span></li>
+            <li class="flex items-center gap-2 text-muted">✅ <span class="zh">基础食谱</span><span class="en hidden">Basic recipes</span></li>
+            <li class="flex items-center gap-2 text-muted">✅ <span class="zh">中英文</span><span class="en hidden">CN/EN</span></li>
+            <li class="flex items-center gap-2 text-muted-2">❌ <span class="zh">营养估算</span><span class="en hidden">Nutrition</span></li>
           </ul>
-          <a href="#waitlist" class="block w-full py-3 rounded-xl border border-white/20 text-center font-medium hover:bg-white/10"><span class="zh">免费加入</span><span class="en hidden">Join Free</span></a>
+          <a href="#waitlist" class="block w-full py-2 rounded-lg border border-subtle text-center text-sm font-medium hover:bg-white/5">
+            <span class="zh">免费加入</span><span class="en hidden">Join Free</span>
+          </a>
         </div>
-        <div class="bg-gradient-to-br from-orange-600/30 to-purple-600/30 border border-orange-500/50 rounded-2xl p-8 relative">
-          <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-orange-500 to-purple-500 text-xs font-bold px-4 py-1 rounded-full"><span class="zh">最受欢迎</span><span class="en hidden">POPULAR</span></div>
-          <h3 class="text-xl font-bold mb-2"><span class="zh">专业版</span><span class="en hidden">Pro</span></h3>
-          <div class="text-4xl font-bold mb-1">$4.9 <span class="text-lg font-normal text-gray-400">/月</span></div>
-          <ul class="space-y-3 mt-6 mb-8 text-sm">
-            <li class="flex items-center gap-2">✅ <span class="zh">无限次数</span><span class="en hidden">Unlimited</span></li>
-            <li class="flex items-center gap-2">✅ <span class="zh">营养估算</span><span class="en hidden">Nutrition</span></li>
-            <li class="flex items-center gap-2">✅ <span class="zh">优先队列</span><span class="en hidden">Priority</span></li>
-            <li class="flex items-center gap-2">✅ <span class="zh">收藏保存</span><span class="en hidden">Save</span></li>
+        
+        <div class="card p-6 border-white/15">
+          <div class="text-xs font-medium text-muted mb-2"><span class="zh">最受欢迎</span><span class="en hidden">POPULAR</span></div>
+          <h3 class="text-sm font-semibold mb-1"><span class="zh">专业版</span><span class="en hidden">Pro</span></h3>
+          <div class="text-2xl font-bold mb-4">$4.9 <span class="text-xs font-normal text-muted">/月</span></div>
+          <ul class="space-y-2 mb-6 text-xs">
+            <li class="flex items-center gap-2 text-muted">✅ <span class="zh">无限次数</span><span class="en hidden">Unlimited</span></li>
+            <li class="flex items-center gap-2 text-muted">✅ <span class="zh">营养分析</span><span class="en hidden">Nutrition</span></li>
+            <li class="flex items-center gap-2 text-muted">✅ <span class="zh">优先队列</span><span class="en hidden">Priority</span></li>
+            <li class="flex items-center gap-2 text-muted">✅ <span class="zh">收藏保存</span><span class="en hidden">Save</span></li>
           </ul>
-          <a href="#waitlist" class="btn-primary block w-full py-3 rounded-xl text-center font-medium"><span class="zh">立即升级</span><span class="en hidden">Upgrade</span></a>
+          <a href="#waitlist" class="btn-primary block w-full py-2 rounded-lg text-center text-sm font-medium">
+            <span class="zh">立即升级</span><span class="en hidden">Upgrade</span>
+          </a>
         </div>
       </div>
     </div>
   </section>
 
   <!-- Waitlist -->
-  <section id="waitlist" class="py-20 px-6">
-    <div class="max-w-2xl mx-auto text-center">
-      <h2 class="text-3xl font-bold mb-4">
+  <section id="waitlist" class="py-20 px-6 border-t border-subtle">
+    <div class="max-w-md mx-auto text-center">
+      <h2 class="text-xl font-bold mb-2">
         <span class="zh">加入等待列表</span>
         <span class="en hidden">Join Waitlist</span>
       </h2>
-      <p class="text-gray-400 mb-8">
-        <span class="zh">首批用户享受专属优惠，快来加入吧！</span>
-        <span class="en hidden">Get early access and exclusive discounts!</span>
+      <p class="text-muted text-sm mb-8">
+        <span class="zh">首批用户享受专属优惠！</span>
+        <span class="en hidden">Get early access & discounts!</span>
       </p>
-      <form id="waitlistForm" class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" onsubmit="handleSubmit(event)">
-        <input type="email" id="email" required placeholder="your@email.com" class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500">
-        <button type="submit" class="btn-primary px-6 py-3 rounded-xl font-semibold whitespace-nowrap flex items-center justify-center gap-2">
+      
+      <form id="waitlistForm" class="flex flex-col gap-3" onsubmit="handleSubmit(event)">
+        <input type="email" id="email" required placeholder="your@email.com" class="w-full bg-white/5 border border-subtle rounded-lg px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-white/20">
+        <button type="submit" class="btn-primary w-full py-2.5 rounded-lg text-sm font-medium flex items-center justify-center gap-2">
           <span id="btnText"><span class="zh">立即加入</span><span class="en hidden">Join</span></span>
           <div id="spinner" class="spinner hidden"></div>
         </button>
       </form>
-      <p id="successMsg" class="hidden mt-4 text-green-400">
-        <span class="zh">✅ 感谢！已加入等待列表</span>
-        <span class="en hidden">✅ Thanks! You're on the list</span>
+      
+      <p id="successMsg" class="hidden mt-4 text-sm text-emerald-400">
+        <span class="zh">✅ 已加入等待列表</span>
+        <span class="en hidden">✅ You're on the list!</span>
       </p>
     </div>
   </section>
 
   <!-- Footer -->
-  <footer class="border-t border-white/10 py-8 px-6">
-    <div class="max-w-6xl mx-auto text-center text-gray-500 text-sm">
-      <p>© 2026 RecipeAI. Powered by AI.</p>
+  <footer class="border-t border-subtle py-8 px-6">
+    <div class="max-w-5xl mx-auto text-center">
+      <div class="flex items-center justify-center gap-2 mb-3">
+        <div class="w-6 h-6 bg-white rounded-md flex items-center justify-center">
+          <span class="text-black text-xs">🍳</span>
+        </div>
+        <span class="text-sm font-medium">RecipeAI</span>
+      </div>
+      <p class="text-xs text-muted">© 2026 RecipeAI. Powered by AI.</p>
     </div>
   </footer>
 
   <script>
-    // Language toggle
     function switchLang(lang) {
       document.querySelectorAll('.zh, .en').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.' + lang).forEach(el => el.classList.remove('hidden'));
       document.getElementById('btnZh').classList.toggle('active', lang === 'zh');
       document.getElementById('btnEn').classList.toggle('active', lang === 'en');
-      document.documentElement.lang = lang;
       localStorage.setItem('lang', lang);
     }
     
-    // Init language
     const savedLang = localStorage.getItem('lang') || 'zh';
     switchLang(savedLang);
     
-    // Waitlist form
     function handleSubmit(e) {
       e.preventDefault();
       const email = document.getElementById('email').value.trim();
@@ -367,16 +497,494 @@
       const spinner = document.getElementById('spinner');
       btn.disabled = true;
       spinner.classList.remove('hidden');
+      
       const waitlist = JSON.parse(localStorage.getItem('waitlist') || '[]');
       if (!waitlist.includes(email)) {
         waitlist.push(email);
         localStorage.setItem('waitlist', JSON.stringify(waitlist));
       }
+      
       setTimeout(() => {
         document.getElementById('waitlistForm').classList.add('hidden');
         document.getElementById('successMsg').classList.remove('hidden');
       }, 1000);
     }
   </script>
+
+<script>
+/**
+ * Iframe 元素高亮注入脚本
+ * 需要在目标网站中引入此脚本来支持跨域 iframe 高亮功能
+ *
+ * 使用方法：
+ * 1. 将此脚本添加到目标网站的 HTML 中
+ * 2. 或通过浏览器扩展、用户脚本等方式注入
+ */
+
+(function () {
+  "use strict";
+
+  // 检查是否在 iframe 中
+  if (window.self === window.top) {
+    return; // 不在 iframe 中，不执行
+  }
+
+  // 检查是否已经初始化过
+  if (window.__iframeHighlightInitialized) {
+    return;
+  }
+  window.__iframeHighlightInitialized = true;
+  console.log("Iframe 高亮脚本已加载");
+
+  // 创建高亮覆盖层
+  var overlay = document.createElement("div");
+  overlay.id = "iframe-highlight-overlay";
+  overlay.style.cssText = "\n    position: fixed;\n    top: 0;\n    left: 0;\n    width: 100vw;\n    height: 100vh;\n    pointer-events: none;\n    z-index: 999999;\n    overflow: hidden;\n  ";
+
+  // 创建悬停高亮框（虚线边框）
+  var highlightBox = document.createElement("div");
+  highlightBox.id = "iframe-highlight-box";
+  highlightBox.style.cssText = "\n    position: absolute;\n    border: 2px dashed #007AFF;\n    background: rgba(0, 122, 255, 0.08);\n    pointer-events: none;\n    display: none;\n    transition: all 0.1s ease;\n    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.8);\n    border-radius: 2px;\n  ";
+
+  // 创建选中节点的常驻高亮框（实线边框）
+  var selectedBox = document.createElement("div");
+  selectedBox.id = "iframe-selected-box";
+  selectedBox.style.cssText = "\n    position: absolute;\n    border: 2px solid #007AFF;\n    pointer-events: none;\n    display: none;\n    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.9), 0 0 8px rgba(255, 107, 53, 0.4);\n    border-radius: 2px;\n    z-index: 1000000;\n  ";
+
+  // 创建悬停标签显示
+  var tagLabel = document.createElement("div");
+  tagLabel.id = "iframe-tag-label";
+  tagLabel.style.cssText = "\n    position: absolute;\n    background: #007AFF;\n    color: white;\n    padding: 2px 6px;\n    font-size: 11px;\n    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;\n    border-radius: 2px;\n    pointer-events: none;\n    display: none;\n    white-space: nowrap;\n    z-index: 1000001;\n    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);\n    font-weight: 500;\n  ";
+
+  // 创建选中节点标签
+  var selectedLabel = document.createElement("div");
+  selectedLabel.id = "iframe-selected-label";
+  selectedLabel.style.cssText = "\n    position: absolute;\n    background: #007AFF;\n    color: white;\n    padding: 3px 8px;\n    font-size: 11px;\n    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;\n    border-radius: 3px;\n    pointer-events: none;\n    display: none;\n    white-space: nowrap;\n    z-index: 1000002;\n    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);\n    font-weight: 600;\n  ";
+  overlay.appendChild(highlightBox);
+  overlay.appendChild(selectedBox);
+  overlay.appendChild(tagLabel);
+  overlay.appendChild(selectedLabel);
+  document.body.appendChild(overlay);
+
+  // 存储当前选中的元素
+  var selectedElement = null;
+  var highlightEnabled = false;
+
+  // 更新选中元素的高亮显示
+  function updateSelectedHighlight(element) {
+    console.log("updateSelectedHighlight called with:", element);
+    if (!element) {
+      selectedBox.style.display = "none";
+      selectedLabel.style.display = "none";
+      selectedElement = null;
+      console.log("Cleared selected highlight");
+      return;
+    }
+    selectedElement = element;
+    var rect = element.getBoundingClientRect();
+    console.log("Selected element rect:", rect);
+
+    // 更新选中高亮框位置
+    selectedBox.style.display = "block";
+    selectedBox.style.left = "".concat(rect.left - 2, "px");
+    selectedBox.style.top = "".concat(rect.top - 2, "px");
+    selectedBox.style.width = "".concat(rect.width + 4, "px");
+    selectedBox.style.height = "".concat(rect.height + 4, "px");
+
+    // 更新选中标签位置和内容
+    selectedLabel.style.display = "block";
+    selectedLabel.textContent = "\u2713 <".concat(element.tagName.toLowerCase(), ">");
+
+    // 计算标签位置，确保不超出视窗
+    var labelTop = rect.top - 28;
+    var labelLeft = rect.left;
+
+    // 如果标签会超出顶部，显示在元素下方
+    if (labelTop < 5) {
+      labelTop = rect.bottom + 5;
+    }
+
+    // 如果标签会超出右侧，向左调整
+    var labelWidth = selectedLabel.offsetWidth || 100; // 预估宽度
+    if (labelLeft + labelWidth > window.innerWidth - 10) {
+      labelLeft = window.innerWidth - labelWidth - 10;
+    }
+    selectedLabel.style.left = "".concat(Math.max(5, labelLeft), "px");
+    selectedLabel.style.top = "".concat(labelTop, "px");
+    console.log("Selected highlight positioned at:", {
+      left: selectedBox.style.left,
+      top: selectedBox.style.top,
+      width: selectedBox.style.width,
+      height: selectedBox.style.height
+    });
+  }
+  function getElementSelector(element) {
+    if (!(element instanceof Element)) throw new Error('Argument must be a DOM element');
+    var segments = [];
+    var current = element;
+    while (current !== document.documentElement) {
+      var selector = '';
+      // 优先检查唯一ID
+      if (current.id && document.querySelectorAll("#".concat(current.id)).length === 1) {
+        segments.unshift("#".concat(current.id));
+        break; // ID唯一，无需继续向上
+      }
+
+      // 生成类名选择器（取第一个有效类名）
+      var classes = Array.from(current.classList).filter(function (c) {
+        return !c.startsWith('js-');
+      });
+      var className = classes.length > 0 ? ".".concat(classes[0]) : '';
+
+      // 生成位置索引（nth-child）
+      var tag = current.tagName.toLowerCase();
+      if (!className) {
+        var siblings = Array.from(current.parentNode.children);
+        var index = siblings.findIndex(function (el) {
+          return el === current;
+        }) + 1;
+        selector = "".concat(tag, ":nth-child(").concat(index, ")");
+      } else {
+        selector = className;
+      }
+      segments.unshift(selector);
+      current = current.parentElement;
+    }
+
+    // 处理根元素
+    if (current === document.documentElement) {
+      segments.unshift('html');
+    }
+    return segments.join(' > ');
+  }
+
+  // 获取元素文本内容
+  function getElementText(element) {
+    var _element$textContent;
+    if (element.tagName === "INPUT") {
+      return element.value || element.placeholder || "";
+    }
+    if (element.tagName === "TEXTAREA") {
+      return element.value || element.placeholder || "";
+    }
+    var text = ((_element$textContent = element.textContent) === null || _element$textContent === void 0 ? void 0 : _element$textContent.trim()) || "";
+    return text.length > 50 ? text.substring(0, 50) + "..." : text;
+  }
+
+  // 获取元素属性信息
+  function getElementAttributes(element) {
+    var attrs = {};
+    for (var i = 0; i < element.attributes.length; i++) {
+      var attr = element.attributes[i];
+      attrs[attr.name] = attr.value;
+    }
+    return attrs;
+  }
+
+  // 鼠标悬停事件处理
+  function handleMouseOver(e) {
+    if (!highlightEnabled) return;
+    var target = e.target;
+    if (!target || target === overlay || target === highlightBox || target === tagLabel || target === selectedBox || target === selectedLabel) {
+      return;
+    }
+
+    // 避免高亮 html 和 body 元素
+    if (target === document.documentElement || target === document.body) {
+      return;
+    }
+
+    // 如果是已选中的元素，不显示悬停高亮
+    if (target === selectedElement) {
+      highlightBox.style.display = "none";
+      tagLabel.style.display = "none";
+      return;
+    }
+    var rect = target.getBoundingClientRect();
+    var selector = getElementSelector(target);
+    var text = getElementText(target);
+    var attributes = getElementAttributes(target);
+
+    // 更新悬停高亮框位置
+    highlightBox.style.display = "block";
+    highlightBox.style.left = "".concat(rect.left - 2, "px");
+    highlightBox.style.top = "".concat(rect.top - 2, "px");
+    highlightBox.style.width = "".concat(rect.width + 4, "px");
+    highlightBox.style.height = "".concat(rect.height + 4, "px");
+
+    // 更新标签位置和内容
+    tagLabel.style.display = "block";
+    tagLabel.textContent = "<".concat(target.tagName.toLowerCase(), ">");
+
+    // 计算标签位置，确保不超出视窗
+    var labelTop = rect.top - 22;
+    var labelLeft = rect.left;
+
+    // 如果标签会超出顶部，显示在元素下方
+    if (labelTop < 0) {
+      labelTop = rect.bottom + 5;
+    }
+
+    // 如果标签会超出右侧，向左调整
+    if (labelLeft + tagLabel.offsetWidth > window.innerWidth) {
+      labelLeft = window.innerWidth - tagLabel.offsetWidth - 5;
+    }
+    tagLabel.style.left = "".concat(Math.max(0, labelLeft), "px");
+    tagLabel.style.top = "".concat(labelTop, "px");
+
+    // 发送消息到父窗口
+    var elementInfo = {
+      tagName: target.tagName.toLowerCase(),
+      rect: {
+        left: rect.left,
+        top: rect.top,
+        right: rect.right,
+        bottom: rect.bottom,
+        width: rect.width,
+        height: rect.height,
+        x: rect.x,
+        y: rect.y
+      },
+      selector: selector,
+      text: text,
+      attributes: attributes,
+      url: window.location.href,
+      path: window.location.pathname,
+      timestamp: Date.now()
+    };
+    try {
+      window.parent.postMessage({
+        type: "iframe-element-hover",
+        data: elementInfo,
+        source: "iframe-highlight-injector"
+      }, "*");
+    } catch (error) {
+      console.warn("无法发送消息到父窗口:", error);
+    }
+  }
+
+  // 鼠标离开事件处理
+  function handleMouseOut(e) {
+    if (!highlightEnabled) return;
+    var relatedTarget = e.relatedTarget;
+
+    // 如果鼠标移动到高亮相关元素上，不隐藏高亮
+    if (relatedTarget && (relatedTarget === highlightBox || relatedTarget === tagLabel || relatedTarget === overlay || relatedTarget === selectedBox || relatedTarget === selectedLabel)) {
+      return;
+    }
+    highlightBox.style.display = "none";
+    tagLabel.style.display = "none";
+    try {
+      window.parent.postMessage({
+        type: "iframe-element-hover",
+        data: null,
+        source: "iframe-highlight-injector"
+      }, "*");
+    } catch (error) {
+      console.warn("无法发送消息到父窗口:", error);
+    }
+  }
+
+  // 点击事件处理
+  function handleClick(e) {
+    var target = e.target;
+    if (!target || target === overlay || target === highlightBox || target === tagLabel || target === selectedBox || target === selectedLabel) {
+      return;
+    }
+
+    // 避免处理 html 和 body 元素
+    if (target === document.documentElement || target === document.body) {
+      return;
+    }
+
+    // 检查是否是交互元素，这些元素需要保留默认行为
+    var isInteractiveElement = ['input', 'textarea', 'select', 'button', 'a'].includes(target.tagName.toLowerCase());
+
+    // 如果高亮功能启用，对于非交互元素阻止默认行为和事件传播
+    if (highlightEnabled) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    var rect = target.getBoundingClientRect();
+    var selector = getElementSelector(target);
+    var text = getElementText(target);
+    var attributes = getElementAttributes(target);
+    console.log("Element clicked:", {
+      tagName: target.tagName,
+      selector: selector,
+      rect: rect
+    });
+
+    // 立即更新选中高亮
+    updateSelectedHighlight(target);
+
+    // 隐藏悬停高亮，因为现在是选中状态
+    highlightBox.style.display = "none";
+    tagLabel.style.display = "none";
+    var elementInfo = {
+      tagName: target.tagName.toLowerCase(),
+      rect: {
+        left: rect.left,
+        top: rect.top,
+        right: rect.right,
+        bottom: rect.bottom,
+        width: rect.width,
+        height: rect.height,
+        x: rect.x,
+        y: rect.y
+      },
+      selector: selector,
+      text: text,
+      attributes: attributes,
+      url: window.location.href,
+      path: window.location.pathname,
+      timestamp: Date.now()
+    };
+    try {
+      window.parent.postMessage({
+        type: "iframe-element-click",
+        data: elementInfo,
+        source: "iframe-highlight-injector"
+      }, "*");
+    } catch (error) {
+      console.warn("无法发送消息到父窗口:", error);
+    }
+  }
+
+  // 监听来自父窗口的消息
+  function handleParentMessage(event) {
+    console.log("Received message from parent:", event.data);
+    if (event.data.type === "iframe-highlight-toggle") {
+      var enabled = event.data.enabled;
+      console.log("Highlight toggle:", enabled);
+      if (enabled) {
+        enableHighlight();
+      } else {
+        disableHighlight();
+      }
+    } else if (event.data.type === "enable-iframe-highlight") {
+      console.log("Enable iframe highlight");
+      enableHighlight();
+    } else if (event.data.type === "disable-iframe-highlight") {
+      console.log("Disable iframe highlight");
+      disableHighlight();
+    } else if (event.data.type === "toggle-iframe-highlight") {
+      var _enabled = event.data.enabled !== undefined ? event.data.enabled : !highlightEnabled;
+      console.log("Toggle iframe highlight to:", _enabled);
+      if (_enabled) {
+        enableHighlight();
+      } else {
+        disableHighlight();
+      }
+    } else if (event.data.type === "update-selected-element") {
+      var selector = event.data.selector;
+      console.log("Update selected element with selector:", selector);
+      if (selector) {
+        try {
+          var element = document.querySelector(selector);
+          console.log("Found element by selector:", element);
+          updateSelectedHighlight(element);
+        } catch (error) {
+          console.warn("Failed to select element:", error);
+          updateSelectedHighlight(null);
+        }
+      } else {
+        updateSelectedHighlight(null);
+      }
+    } else if (event.data.type === "clear-selected-element") {
+      console.log("Clear selected element");
+      updateSelectedHighlight(null);
+    }
+  }
+
+  // 启用高亮功能
+  function enableHighlight() {
+    console.log("Enabling highlight");
+    document.addEventListener("mouseover", handleMouseOver, true);
+    document.addEventListener("mouseout", handleMouseOut, true);
+    document.addEventListener("click", handleClick, true);
+    highlightEnabled = true;
+    overlay.style.display = "block";
+  }
+
+  // 禁用高亮功能
+  function disableHighlight() {
+    console.log("Disabling highlight");
+    highlightEnabled = false;
+    // 保持事件监听器，但通过 highlightEnabled 变量控制行为
+    // 这样可以保留选中状态的显示
+    highlightBox.style.display = "none";
+    tagLabel.style.display = "none";
+    // 不隐藏 selectedBox 和 selectedLabel，保留选中状态
+  }
+
+  // 完全禁用高亮功能（移除所有监听器）
+  function fullyDisableHighlight() {
+    console.log("Fully disabling highlight");
+    highlightEnabled = false;
+    document.removeEventListener("mouseover", handleMouseOver, true);
+    document.removeEventListener("mouseout", handleMouseOut, true);
+    document.removeEventListener("click", handleClick, true);
+    overlay.style.display = "none";
+    highlightBox.style.display = "none";
+    tagLabel.style.display = "none";
+    selectedBox.style.display = "none";
+    selectedLabel.style.display = "none";
+  }
+
+  // 添加事件监听
+  enableHighlight();
+  window.addEventListener("message", handleParentMessage);
+
+  // 暴露全局函数供外部调用
+  window.__iframeHighlightControl = {
+    enable: enableHighlight,
+    disable: disableHighlight,
+    fullyDisable: fullyDisableHighlight,
+    isEnabled: function isEnabled() {
+      return highlightEnabled;
+    },
+    getSelectedElement: function getSelectedElement() {
+      return selectedElement;
+    },
+    updateSelected: updateSelectedHighlight,
+    // 通过消息发送开关控制
+    sendToggleMessage: function sendToggleMessage(enabled) {
+      window.parent.postMessage({
+        type: 'iframe-highlight-status',
+        enabled: enabled || highlightEnabled,
+        source: 'iframe-highlight-injector'
+      }, '*');
+    }
+  };
+
+  // 通知父窗口脚本已加载
+  try {
+    window.parent.postMessage({
+      type: "iframe-highlight-ready",
+      data: {
+        url: window.location.href,
+        userAgent: navigator.userAgent,
+        timestamp: Date.now()
+      },
+      source: "iframe-highlight-injector"
+    }, "*");
+  } catch (error) {
+    console.warn("无法发送就绪消息到父窗口:", error);
+  }
+
+  // 清理函数
+  window.__iframeHighlightCleanup = function () {
+    fullyDisableHighlight();
+    window.removeEventListener("message", handleParentMessage);
+    if (overlay.parentElement) {
+      overlay.parentElement.removeChild(overlay);
+    }
+    delete window.__iframeHighlightInitialized;
+    delete window.__iframeHighlightCleanup;
+  };
+})();
+
+</script>
 </body>
 </html>

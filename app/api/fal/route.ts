@@ -9,8 +9,8 @@ export async function POST(request: NextRequest) {
   }
 
   const endpoint = model === 'llava' 
-    ? 'https://queue.fal.ai/fal-ai/llava-next'
-    : 'https://queue.fal.ai/fal-ai/qwen2-5-coder-32b-instruct';
+    ? 'https://fal.run/fal-ai/llava-next'
+    : 'https://fal.run/fal-ai/qwen2-5-coder-32b-instruct';
 
   try {
     const response = await fetch(endpoint, {

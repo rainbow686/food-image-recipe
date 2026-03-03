@@ -13,14 +13,14 @@
     /* Glassmorphism - Dark (default) */
     body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(ellipse 80% 60% at 20% 10%, rgba(16, 185, 129, 0.25), transparent 50%), radial-gradient(ellipse 60% 50% at 80% 20%, rgba(5, 150, 105, 0.2), transparent 50%), radial-gradient(ellipse 50% 40% at 50% 80%, rgba(16, 185, 129, 0.15), transparent 50%), #0f0f1a; z-index: -1; }
     
-    /* Glassmorphism - Light */
-    body.light-mode::before { background: radial-gradient(ellipse 80% 60% at 20% 10%, rgba(16, 185, 129, 0.15), transparent 50%), radial-gradient(ellipse 60% 50% at 80% 20%, rgba(5, 150, 105, 0.1), transparent 50%), radial-gradient(ellipse 50% 40% at 50% 80%, rgba(16, 185, 129, 0.08), transparent 50%), #f0fdf4; }
+    /* Glassmorphism - Light - Claude.ai warm cream style */
+    body.light-mode::before { background: radial-gradient(ellipse 80% 60% at 20% 10%, rgba(218, 119, 86, 0.12), transparent 50%), radial-gradient(ellipse 60% 50% at 80% 20%, rgba(180, 100, 70, 0.08), transparent 50%), radial-gradient(ellipse 50% 40% at 50% 80%, rgba(218, 119, 86, 0.06), transparent 50%), #faf8f5; z-index: -1; }
     
     /* Variables - Dark */
     :root { --bg-primary: transparent; --bg-secondary: rgba(255, 255, 255, 0.05); --bg-tertiary: rgba(255, 255, 255, 0.08); --text-primary: #ffffff; --text-secondary: rgba(255, 255, 255, 0.7); --text-muted: rgba(255, 255, 255, 0.5); --border: rgba(255, 255, 255, 0.1); --accent: #10b981; --accent-soft: rgba(16, 185, 129, 0.15); --card-bg: rgba(255, 255, 255, 0.08); }
     
-    /* Variables - Light */
-    body.light-mode { --bg-primary: transparent; --bg-secondary: rgba(16, 185, 129, 0.08); --bg-tertiary: rgba(16, 185, 129, 0.12); --text-primary: #14532d; --text-secondary: #166534; --text-muted: #15803d; --border: rgba(16, 185, 129, 0.2); --accent: #10b981; --accent-soft: rgba(16, 185, 129, 0.15); --card-bg: rgba(255, 255, 255, 0.6); }
+    /* Variables - Light - Claude.ai style */
+    body.light-mode { --bg-primary: transparent; --bg-secondary: rgba(255, 252, 248, 0.7); --bg-tertiary: rgba(218, 119, 86, 0.1); --text-primary: #2d2420; --text-secondary: #5c4d45; --text-muted: #8b7670; --border: rgba(218, 119, 86, 0.15); --accent: #da7756; --accent-soft: rgba(218, 119, 86, 0.12); --card-bg: rgba(255, 255, 255, 0.65); }
     
     /* Cards */
     .card { background: var(--card-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--border); transition: all 0.2s ease; }
@@ -29,7 +29,9 @@
     
     /* Buttons */
     .btn-primary { background: linear-gradient(135deg, #10b981, #059669); color: white; font-weight: 600; border: none; border-radius: 9999px; transition: all 0.2s ease; }
+    body.light-mode .btn-primary { background: linear-gradient(135deg, #da7756, #c4613f); }
     .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4); }
+    body.light-mode .btn-primary:hover { box-shadow: 0 8px 25px rgba(218, 119, 86, 0.4); }
     
     .btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text-primary); font-weight: 500; border-radius: 9999px; transition: all 0.2s ease; }
     .btn-secondary:hover { background: var(--bg-tertiary); border-color: var(--accent); }
@@ -203,7 +205,7 @@
         <input type="email" id="email" required placeholder="your@email.com" class="w-full rounded-full px-5 py-3 text-sm" style="background: var(--bg-secondary); border: 1px solid var(--border); color: var(--text-primary);">
         <button type="submit" class="btn-primary w-full py-3 rounded-full text-sm font-medium flex items-center justify-center gap-2"><span id="btnText"><span class="zh">立即加入</span><span class="en hidden">Join</span></span><div id="spinner" class="spinner hidden"></div></button>
       </form>
-      <p id="successMsg" class="hidden mt-4 text-sm" style="color: #10b981;"><span class="zh">✅ 已加入等待列表</span><span class="en hidden">✅ You're on the list!</span></p>
+      <p id="successMsg" class="hidden mt-4 text-sm" style="color: var(--accent);"><span class="zh">✅ 已加入等待列表</span><span class="en hidden">✅ You're on the list!</span></p>
     </div>
   </section>
 

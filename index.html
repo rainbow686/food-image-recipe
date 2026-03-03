@@ -6,95 +6,58 @@
   <title>Food Image to Recipe Generator | AI 食谱生成器</title>
   <meta name="description" content="Turn food photos into recipes with AI. Snap a photo, get a complete recipe with ingredients and instructions.">
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class'
-    }
-  </script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-    body { font-family: 'Inter', sans-serif; transition: background-color 0.3s, color 0.3s; }
-    
-    /* Dark Theme */
-    .dark { --bg-primary: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%); }
-    .dark .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%); }
-    .dark .bg-main { background: #0f172a; }
-    .dark .bg-card { background: rgba(255,255,255,0.05); }
-    .dark .bg-card-hover:hover { background: rgba(255,255,255,0.1); }
-    .dark .border-card { border-color: rgba(255,255,255,0.1); }
-    .dark .text-primary { color: #f97316; }
-    .dark .text-main { color: white; }
-    .dark .text-muted { color: #9ca3af; }
-    .dark header { background: rgba(0,0,0,0.3); backdrop-filter: blur(12px); }
-    .dark .btn-primary { background: linear-gradient(135deg, #f97316, #ea580c); }
-    .dark .btn-secondary { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
-    .dark .btn-secondary:hover { background: rgba(255,255,255,0.2); }
-    .dark .pattern-bg { background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0); }
-    
-    /* Light Theme */
-    .light { --bg-primary: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f8fafc 100%); }
-    .light .gradient-bg { background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f8fafc 100%); }
-    .light .bg-main { background: #f8fafc; }
-    .light .bg-card { background: white; }
-    .light .bg-card-hover:hover { background: #f1f5f9; }
-    .light .border-card { border-color: #e2e8f0; }
-    .light .text-primary { color: #ea580c; }
-    .light .text-main { color: #1e293b; }
-    .light .text-muted { color: #64748b; }
-    .light header { background: rgba(255,255,255,0.9); backdrop-filter: blur(12px); border-bottom: 1px solid #e2e8f0; }
-    .light .btn-primary { background: linear-gradient(135deg, #ea580c, #dc2626); }
-    .light .btn-secondary { background: white; border-color: #e2e8f0; color: #1e293b; }
-    .light .btn-secondary:hover { background: #f1f5f9; }
-    .light .pattern-bg { background-image: radial-gradient(circle at 1px 1px, rgba(0,0,0,0.03) 1px, transparent 0); }
-    
-    .gradient-text { background: linear-gradient(135deg, #f97316, #fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .dark .gradient-text { background: linear-gradient(135deg, #f97316, #fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .light .gradient-text { background: linear-gradient(135deg, #ea580c, #dc2626); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    
-    .btn-primary { transition: all 0.2s; }
+    body { font-family: 'Inter', sans-serif; }
+    .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%); }
+    .card-glow { box-shadow: 0 0 30px rgba(249, 115, 22, 0.15); }
+    .btn-primary { background: linear-gradient(135deg, #f97316, #ea580c); transition: all 0.2s; }
     .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(249, 115, 22, 0.4); }
+    .btn-secondary { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); transition: all 0.2s; }
+    .btn-secondary:hover { background: rgba(255,255,255,0.2); }
     .spinner { border: 3px solid rgba(255,255,255,0.2); border-top-color: white; border-radius: 50%; width: 20px; height: 20px; animation: spin 0.8s linear infinite; }
-    .light .spinner { border-color: rgba(0,0,0,0.2); border-top-color: #ea580c; }
     @keyframes spin { to { transform: rotate(360deg); } }
+    .fade-in { animation: fadeIn 0.6s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     .card-hover { transition: all 0.3s; }
-    .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
-    .light .card-hover:hover { box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
-    .theme-btn { transition: all 0.2s; cursor: pointer; padding: 8px 16px; border-radius: 20px; font-size: 14px; }
-    .dark .theme-btn { background: rgba(255,255,255,0.1); color: #fbbf24; }
-    .light .theme-btn { background: #e2e8f0; color: #1e293b; }
+    .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+    .pattern-bg { background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0); background-size: 40px 40px; }
+    .gradient-text { background: linear-gradient(135deg, #f97316, #fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .lang-btn { cursor: pointer; padding: 6px 12px; border-radius: 16px; font-size: 13px; transition: all 0.2s; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); }
+    .lang-btn:hover { background: rgba(255,255,255,0.2); }
+    .lang-btn.active { background: #f97316; color: white; }
   </style>
 </head>
-<body class="gradient-bg min-h-screen pattern-bg">
+<body class="gradient-bg min-h-screen text-white pattern-bg">
   <!-- Header -->
-  <header class="fixed top-0 left-0 right-0 z-50 border-b border-card">
+  <header class="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-black/30 border-b border-white/10">
     <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
       <a href="#" class="text-xl font-bold flex items-center gap-3">
         <span class="text-2xl">🍳</span>
-        <span class="zh text-main">AI 食谱生成器</span>
-        <span class="en hidden text-main">RecipeAI</span>
+        <span class="zh">AI 食谱生成器</span>
+        <span class="en hidden">RecipeAI</span>
       </a>
       <nav class="hidden md:flex items-center gap-6">
-        <a href="#how-it-works" class="text-sm text-muted hover:text-main transition-colors">
+        <a href="#how-it-works" class="text-sm text-gray-300 hover:text-white transition-colors">
           <span class="zh">如何使用</span>
           <span class="en hidden">How It Works</span>
         </a>
-        <a href="#features" class="text-sm text-muted hover:text-main transition-colors">
+        <a href="#features" class="text-sm text-gray-300 hover:text-white transition-colors">
           <span class="zh">功能特点</span>
           <span class="en hidden">Features</span>
         </a>
-        <a href="#use-cases" class="text-sm text-muted hover:text-main transition-colors">
+        <a href="#use-cases" class="text-sm text-gray-300 hover:text-white transition-colors">
           <span class="zh">使用场景</span>
           <span class="en hidden">Use Cases</span>
         </a>
-        <a href="#pricing" class="text-sm text-muted hover:text-main transition-colors">
+        <a href="#pricing" class="text-sm text-gray-300 hover:text-white transition-colors">
           <span class="zh">价格</span>
           <span class="en hidden">Pricing</span>
         </a>
       </nav>
-      <div class="flex items-center gap-3">
-        <button onclick="setLang('zh')" class="lang-btn px-3 py-1 rounded-lg text-sm transition-all zh-active">中文</button>
-        <button onclick="setLang('en')" class="lang-btn px-3 py-1 rounded-lg text-sm transition-all en-btn">EN</button>
-        <button onclick="toggleTheme()" class="theme-btn" id="themeBtn">🌙</button>
+      <div class="flex items-center gap-2">
+        <button onclick="switchLang('zh')" class="lang-btn active" id="btnZh">中文</button>
+        <button onclick="switchLang('en')" class="lang-btn" id="btnEn">EN</button>
       </div>
     </div>
   </header>
@@ -104,27 +67,27 @@
     <div class="max-w-4xl mx-auto text-center">
       <div class="inline-flex items-center gap-2 bg-orange-500/20 border border-orange-500/30 rounded-full px-4 py-2 mb-8">
         <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-        <span class="text-sm text-orange-500 font-medium">
+        <span class="text-sm text-orange-300">
           <span class="zh">🔔 即将上线 · 首批用户享受专属优惠</span>
           <span class="en hidden">🔔 Coming Soon · Early Access Discount</span>
         </span>
       </div>
       <div class="text-6xl mb-8">📸 → 📝 → 🍽️</div>
-      <h1 class="text-4xl md:text-6xl font-bold mb-6 leading-tight text-main">
+      <h1 class="text-4xl md:text-6xl font-bold mb-6 leading-tight">
         <span class="zh">拍照识别食材<br><span class="gradient-text">AI 生成完整食谱</span></span>
         <span class="en hidden">Snap a Photo<br><span class="gradient-text">Get a Complete Recipe</span></span>
       </h1>
-      <p class="text-xl text-muted mb-10 max-w-2xl mx-auto leading-relaxed">
+      <p class="text-xl text-gray-300 mb-10 max-w-2xl mx-auto leading-relaxed">
         <span class="zh">上传任何食物照片，AI 自动识别食材并生成包含步骤、时间、营养估算的完整食谱。冰箱剩菜、餐厅美食、社交媒体美食，一键复刻！</span>
         <span class="en hidden">Upload any food photo and AI will identify ingredients and generate complete recipes with steps, time estimates, and nutrition info.</span>
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <a href="#waitlist" class="btn-primary px-8 py-4 rounded-xl font-semibold text-lg inline-flex items-center justify-center gap-2 text-white">
+        <a href="#waitlist" class="btn-primary px-8 py-4 rounded-xl font-semibold text-lg inline-flex items-center justify-center gap-2">
           <span>🚀</span>
           <span class="zh">立即加入等待列表</span>
           <span class="en hidden">Join Waitlist - It's Free</span>
         </a>
-        <a href="#how-it-works" class="btn-secondary px-8 py-4 rounded-xl font-semibold text-lg inline-flex items-center justify-center gap-2 text-main">
+        <a href="#how-it-works" class="btn-secondary px-8 py-4 rounded-xl font-semibold text-lg inline-flex items-center justify-center gap-2">
           <span>👇</span>
           <span class="zh">了解更多</span>
           <span class="en hidden">See How It Works</span>
@@ -134,26 +97,26 @@
   </section>
 
   <!-- Stats -->
-  <section class="py-12 px-6 bg-main/50">
+  <section class="py-12 px-6 bg-black/20">
     <div class="max-w-4xl mx-auto">
       <div class="grid grid-cols-3 gap-8 text-center">
         <div>
           <div class="text-3xl font-bold gradient-text">50K+</div>
-          <div class="text-sm text-muted mt-1">
+          <div class="text-sm text-gray-400 mt-1">
             <span class="zh">等待用户</span>
             <span class="en hidden">Waiting Users</span>
           </div>
         </div>
         <div>
           <div class="text-3xl font-bold gradient-text">100K+</div>
-          <div class="text-sm text-muted mt-1">
+          <div class="text-sm text-gray-400 mt-1">
             <span class="zh">预计生成食谱</span>
             <span class="en hidden">Recipes to Generate</span>
           </div>
         </div>
         <div>
           <div class="text-3xl font-bold gradient-text">98%</div>
-          <div class="text-sm text-muted mt-1">
+          <div class="text-sm text-gray-400 mt-1">
             <span class="zh">识别准确率</span>
             <span class="en hidden">Recognition Accuracy</span>
           </div>
@@ -163,46 +126,46 @@
   </section>
 
   <!-- How It Works -->
-  <section id="how-it-works" class="py-20 px-6 bg-main">
+  <section id="how-it-works" class="py-20 px-6">
     <div class="max-w-6xl mx-auto">
-      <h2 class="text-3xl md:text-4xl font-bold text-center mb-4 text-main">
+      <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">
         <span class="zh">如何使用</span>
         <span class="en hidden">How It Works</span>
       </h2>
-      <p class="text-muted text-center mb-16 max-w-2xl mx-auto">
+      <p class="text-gray-400 text-center mb-16 max-w-2xl mx-auto">
         <span class="zh">三步完成，从照片到食谱只需几秒钟</span>
         <span class="en hidden">Three simple steps, from photo to recipe in seconds</span>
       </p>
       <div class="grid md:grid-cols-3 gap-8">
-        <div class="text-center card-hover bg-card border border-card rounded-2xl p-8">
-          <div class="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center text-2xl font-bold text-white">1</div>
-          <h3 class="text-xl font-bold mb-3 text-main">
+        <div class="text-center card-hover bg-white/5 border border-white/10 rounded-2xl p-8">
+          <div class="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center text-2xl font-bold">1</div>
+          <h3 class="text-xl font-bold mb-3">
             <span class="zh">📷 上传照片</span>
             <span class="en hidden">📷 Upload Photo</span>
           </h3>
-          <p class="text-muted text-sm leading-relaxed">
+          <p class="text-gray-400 text-sm leading-relaxed">
             <span class="zh">拍照或上传任何食物照片</span>
             <span class="en hidden">Take a photo or upload any food image</span>
           </p>
         </div>
-        <div class="text-center card-hover bg-card border border-card rounded-2xl p-8">
-          <div class="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center text-2xl font-bold text-white">2</div>
-          <h3 class="text-xl font-bold mb-3 text-main">
+        <div class="text-center card-hover bg-white/5 border border-white/10 rounded-2xl p-8">
+          <div class="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center text-2xl font-bold">2</div>
+          <h3 class="text-xl font-bold mb-3">
             <span class="zh">🤖 AI 智能识别</span>
             <span class="en hidden">🤖 AI Recognition</span>
           </h3>
-          <p class="text-muted text-sm leading-relaxed">
+          <p class="text-gray-400 text-sm leading-relaxed">
             <span class="zh">AI 精准识别食材和菜品</span>
             <span class="en hidden">AI precisely identifies ingredients and dishes</span>
           </p>
         </div>
-        <div class="text-center card-hover bg-card border border-card rounded-2xl p-8">
-          <div class="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center text-2xl font-bold text-white">3</div>
-          <h3 class="text-xl font-bold mb-3 text-main">
+        <div class="text-center card-hover bg-white/5 border border-white/10 rounded-2xl p-8">
+          <div class="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center text-2xl font-bold">3</div>
+          <h3 class="text-xl font-bold mb-3">
             <span class="zh">📝 获取食谱</span>
             <span class="en hidden">📝 Get Recipe</span>
           </h3>
-          <p class="text-muted text-sm leading-relaxed">
+          <p class="text-gray-400 text-sm leading-relaxed">
             <span class="zh">生成完整食谱</span>
             <span class="en hidden">Get complete recipe</span>
           </p>
@@ -212,161 +175,161 @@
   </section>
 
   <!-- Features -->
-  <section id="features" class="py-20 px-6 bg-main/50">
+  <section id="features" class="py-20 px-6 bg-white/5">
     <div class="max-w-6xl mx-auto">
-      <h2 class="text-3xl md:text-4xl font-bold text-center mb-4 text-main">
+      <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">
         <span class="zh">核心功能</span>
         <span class="en hidden">Core Features</span>
       </h2>
-      <p class="text-muted text-center mb-16 max-w-2xl mx-auto">
+      <p class="text-gray-400 text-center mb-16 max-w-2xl mx-auto">
         <span class="zh">强大的 AI 技术，带来前所未有的食谱生成体验</span>
         <span class="en hidden">Powerful AI technology for unprecedented recipe experience</span>
       </p>
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="card-hover bg-card border border-card rounded-2xl p-6">
+        <div class="card-hover bg-white/5 border border-white/10 rounded-2xl p-6">
           <div class="text-3xl mb-4">🔍</div>
-          <h3 class="text-lg font-bold mb-2 text-main"><span class="zh">精准食材识别</span><span class="en hidden">Precise Recognition</span></h3>
-          <p class="text-muted text-sm"><span class="zh">识别上百种食材和菜品</span><span class="en hidden">Identify hundreds of ingredients</span></p>
+          <h3 class="text-lg font-bold mb-2"><span class="zh">精准食材识别</span><span class="en hidden">Precise Recognition</span></h3>
+          <p class="text-gray-400 text-sm"><span class="zh">识别上百种食材和菜品</span><span class="en hidden">Identify hundreds of ingredients</span></p>
         </div>
-        <div class="card-hover bg-card border border-card rounded-2xl p-6">
+        <div class="card-hover bg-white/5 border border-white/10 rounded-2xl p-6">
           <div class="text-3xl mb-4">⚡</div>
-          <h3 class="text-lg font-bold mb-2 text-main"><span class="zh">快速生成</span><span class="en hidden">Fast Generation</span></h3>
-          <p class="text-muted text-sm"><span class="zh">几秒钟完成识别和生成</span><span class="en hidden">Complete in seconds</span></p>
+          <h3 class="text-lg font-bold mb-2"><span class="zh">快速生成</span><span class="en hidden">Fast Generation</span></h3>
+          <p class="text-gray-400 text-sm"><span class="zh">几秒钟完成识别和生成</span><span class="en hidden">Complete in seconds</span></p>
         </div>
-        <div class="card-hover bg-card border border-card rounded-2xl p-6">
+        <div class="card-hover bg-white/5 border border-white/10 rounded-2xl p-6">
           <div class="text-3xl mb-4">🌍</div>
-          <h3 class="text-lg font-bold mb-2 text-main"><span class="zh">多菜系支持</span><span class="en hidden">Multi-Cuisine</span></h3>
-          <p class="text-muted text-sm"><span class="zh">支持全球美食菜系</span><span class="en hidden">Support global cuisines</span></p>
+          <h3 class="text-lg font-bold mb-2"><span class="zh">多菜系支持</span><span class="en hidden">Multi-Cuisine</span></h3>
+          <p class="text-gray-400 text-sm"><span class="zh">支持全球美食菜系</span><span class="en hidden">Support global cuisines</span></p>
         </div>
-        <div class="card-hover bg-card border border-card rounded-2xl p-6">
+        <div class="card-hover bg-white/5 border border-white/10 rounded-2xl p-6">
           <div class="text-3xl mb-4">📊</div>
-          <h3 class="text-lg font-bold mb-2 text-main"><span class="zh">营养估算</span><span class="en hidden">Nutrition</span></h3>
-          <p class="text-muted text-sm"><span class="zh">卡路里营养成分分析</span><span class="en hidden">Calorie & nutrition analysis</span></p>
+          <h3 class="text-lg font-bold mb-2"><span class="zh">营养估算</span><span class="en hidden">Nutrition</span></h3>
+          <p class="text-gray-400 text-sm"><span class="zh">卡路里营养成分分析</span><span class="en hidden">Calorie & nutrition analysis</span></p>
         </div>
-        <div class="card-hover bg-card border border-card rounded-2xl p-6">
+        <div class="card-hover bg-white/5 border border-white/10 rounded-2xl p-6">
           <div class="text-3xl mb-4">📱</div>
-          <h3 class="text-lg font-bold mb-2 text-main"><span class="zh">移动优先</span><span class="en hidden">Mobile First</span></h3>
-          <p class="text-muted text-sm"><span class="zh">完美适配手机平板</span><span class="en hidden">Works on any device</span></p>
+          <h3 class="text-lg font-bold mb-2"><span class="zh">移动优先</span><span class="en hidden">Mobile First</span></h3>
+          <p class="text-gray-400 text-sm"><span class="zh">完美适配手机平板</span><span class="en hidden">Works on any device</span></p>
         </div>
-        <div class="card-hover bg-card border border-card rounded-2xl p-6">
+        <div class="card-hover bg-white/5 border border-white/10 rounded-2xl p-6">
           <div class="text-3xl mb-4">💾</div>
-          <h3 class="text-lg font-bold mb-2 text-main"><span class="zh">保存分享</span><span class="en hidden">Save & Share</span></h3>
-          <p class="text-muted text-sm"><span class="zh">一键保存和分享</span><span class="en hidden">One-click save & share</span></p>
+          <h3 class="text-lg font-bold mb-2"><span class="zh">保存分享</span><span class="en hidden">Save & Share</span></h3>
+          <p class="text-gray-400 text-sm"><span class="zh">一键保存和分享</span><span class="en hidden">One-click save & share</span></p>
         </div>
       </div>
     </div>
   </section>
 
   <!-- Use Cases -->
-  <section id="use-cases" class="py-20 px-6 bg-main">
+  <section id="use-cases" class="py-20 px-6">
     <div class="max-w-6xl mx-auto">
-      <h2 class="text-3xl md:text-4xl font-bold text-center mb-4 text-main">
+      <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">
         <span class="zh">使用场景</span>
         <span class="en hidden">Use Cases</span>
       </h2>
-      <p class="text-muted text-center mb-16 max-w-2xl mx-auto">
+      <p class="text-gray-400 text-center mb-16 max-w-2xl mx-auto">
         <span class="zh">无论什么场景，都能用到</span>
         <span class="en hidden">Useful in any scenario</span>
       </p>
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div class="card-hover bg-gradient-to-br from-orange-500/20 to-red-500/20 border border-orange-500/30 rounded-2xl p-6">
           <div class="text-4xl mb-4">🧊</div>
-          <h3 class="text-lg font-bold mb-2 text-main"><span class="zh">冰箱剩菜</span><span class="en hidden">Leftover Ingredients</span></h3>
-          <p class="text-muted text-sm mb-4"><span class="zh">冰箱里有剩菜？拍照→AI 告诉你能做什么</span><span class="en hidden">Have leftovers? Snap → AI tells you what to cook</span></p>
-          <div class="text-xs text-orange-500 font-medium"><span class="zh">#减少食物浪费</span><span class="en hidden">#ReduceFoodWaste</span></div>
+          <h3 class="text-lg font-bold mb-2"><span class="zh">冰箱剩菜</span><span class="en hidden">Leftover Ingredients</span></h3>
+          <p class="text-gray-400 text-sm mb-4"><span class="zh">冰箱里有剩菜？拍照→AI 告诉你能做什么</span><span class="en hidden">Have leftovers? Snap → AI tells you what to cook</span></p>
+          <div class="text-xs text-orange-400"><span class="zh">#减少食物浪费</span><span class="en hidden">#ReduceFoodWaste</span></div>
         </div>
         <div class="card-hover bg-gradient-to-br from-orange-500/20 to-red-500/20 border border-orange-500/30 rounded-2xl p-6">
           <div class="text-4xl mb-4">🍽️</div>
-          <h3 class="text-lg font-bold mb-2 text-main"><span class="zh">餐厅复刻</span><span class="en hidden">Restaurant Copy</span></h3>
-          <p class="text-muted text-sm mb-4"><span class="zh">餐厅好吃？拍照→在家复刻</span><span class="en hidden">Tried great dish? Recreate at home</span></p>
-          <div class="text-xs text-orange-500 font-medium"><span class="zh">#在家吃大餐</span><span class="en hidden">#HomeCooking</span></div>
+          <h3 class="text-lg font-bold mb-2"><span class="zh">餐厅复刻</span><span class="en hidden">Restaurant Copy</span></h3>
+          <p class="text-gray-400 text-sm mb-4"><span class="zh">餐厅好吃？拍照→在家复刻</span><span class="en hidden">Tried great dish? Recreate at home</span></p>
+          <div class="text-xs text-orange-400"><span class="zh">#在家吃大餐</span><span class="en hidden">#HomeCooking</span></div>
         </div>
         <div class="card-hover bg-gradient-to-br from-orange-500/20 to-red-500/20 border border-orange-500/30 rounded-2xl p-6">
           <div class="text-4xl mb-4">🎵</div>
-          <h3 class="text-lg font-bold mb-2 text-main"><span class="zh">社交媒体</span><span class="en hidden">Social Media</span></h3>
-          <p class="text-muted text-sm mb-4"><span class="zh">看到美食推荐？粘贴链接→自动提取</span><span class="en hidden">Saw food video? Paste link → auto extract</span></p>
-          <div class="text-xs text-orange-500 font-medium"><span class="zh">#跟博主学做菜</span><span class="en hidden">#LearnFromBloggers</span></div>
+          <h3 class="text-lg font-bold mb-2"><span class="zh">社交媒体</span><span class="en hidden">Social Media</span></h3>
+          <p class="text-gray-400 text-sm mb-4"><span class="zh">看到美食推荐？粘贴链接→自动提取</span><span class="en hidden">Saw food video? Paste link → auto extract</span></p>
+          <div class="text-xs text-orange-400"><span class="zh">#跟博主学做菜</span><span class="en hidden">#LearnFromBloggers</span></div>
         </div>
         <div class="card-hover bg-gradient-to-br from-orange-500/20 to-red-500/20 border border-orange-500/30 rounded-2xl p-6">
           <div class="text-4xl mb-4">🛒</div>
-          <h3 class="text-lg font-bold mb-2 text-main"><span class="zh">买菜灵感</span><span class="en hidden">Shopping Inspiration</span></h3>
-          <p class="text-muted text-sm mb-4"><span class="zh">超市看到新奇食材？拍照→获取食谱</span><span class="en hidden">Saw interesting ingredient? Get recipe ideas</span></p>
-          <div class="text-xs text-orange-500 font-medium"><span class="zh">#食材探索</span><span class="en hidden">#IngredientExploration</span></div>
+          <h3 class="text-lg font-bold mb-2"><span class="zh">买菜灵感</span><span class="en hidden">Shopping Inspiration</span></h3>
+          <p class="text-gray-400 text-sm mb-4"><span class="zh">超市看到新奇食材？拍照→获取食谱</span><span class="en hidden">Saw interesting ingredient? Get recipe ideas</span></p>
+          <div class="text-xs text-orange-400"><span class="zh">#食材探索</span><span class="en hidden">#IngredientExploration</span></div>
         </div>
         <div class="card-hover bg-gradient-to-br from-orange-500/20 to-red-500/20 border border-orange-500/30 rounded-2xl p-6">
           <div class="text-4xl mb-4">👨‍👩‍👧</div>
-          <h3 class="text-lg font-bold mb-2 text-main"><span class="zh">家庭料理</span><span class="en hidden">Home Cooking</span></h3>
-          <p class="text-muted text-sm mb-4"><span class="zh">每天发愁做什么？AI 推荐一周菜单</span><span class="en hidden">Daily menu suggestions</span></p>
-          <div class="text-xs text-orange-500 font-medium"><span class="zh">#今日菜单</span><span class="en hidden">#TodaysMenu</span></div>
+          <h3 class="text-lg font-bold mb-2"><span class="zh">家庭料理</span><span class="en hidden">Home Cooking</span></h3>
+          <p class="text-gray-400 text-sm mb-4"><span class="zh">每天发愁做什么？AI 推荐一周菜单</span><span class="en hidden">Daily menu suggestions</span></p>
+          <div class="text-xs text-orange-400"><span class="zh">#今日菜单</span><span class="en hidden">#TodaysMenu</span></div>
         </div>
         <div class="card-hover bg-gradient-to-br from-orange-500/20 to-red-500/20 border border-orange-500/30 rounded-2xl p-6">
           <div class="text-4xl mb-4">🥗</div>
-          <h3 class="text-lg font-bold mb-2 text-main"><span class="zh">健身饮食</span><span class="en hidden">Fitness Diet</span></h3>
-          <p class="text-muted text-sm mb-4"><span class="zh">控制饮食？AI 生成低卡健康食谱</span><span class="en hidden">Low-calorie healthy recipes</span></p>
-          <div class="text-xs text-orange-500 font-medium"><span class="zh">#健康生活</span><span class="en hidden">#HealthyLiving</span></div>
+          <h3 class="text-lg font-bold mb-2"><span class="zh">健身饮食</span><span class="en hidden">Fitness Diet</span></h3>
+          <p class="text-gray-400 text-sm mb-4"><span class="zh">控制饮食？AI 生成低卡健康食谱</span><span class="en hidden">Low-calorie healthy recipes</span></p>
+          <div class="text-xs text-orange-400"><span class="zh">#健康生活</span><span class="en hidden">#HealthyLiving</span></div>
         </div>
       </div>
     </div>
   </section>
 
   <!-- Pricing -->
-  <section id="pricing" class="py-20 px-6 bg-main/50">
+  <section id="pricing" class="py-20 px-6 bg-white/5">
     <div class="max-w-4xl mx-auto">
-      <h2 class="text-3xl md:text-4xl font-bold text-center mb-4 text-main">
+      <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">
         <span class="zh">价格方案</span>
         <span class="en hidden">Pricing</span>
       </h2>
-      <p class="text-muted text-center mb-12">
+      <p class="text-gray-400 text-center mb-12">
         <span class="zh">选择最适合你的方案</span>
         <span class="en hidden">Choose the plan that works best</span>
       </p>
       <div class="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
-        <div class="bg-card border border-card rounded-2xl p-8">
-          <h3 class="text-xl font-bold mb-2 text-main"><span class="zh">免费版</span><span class="en hidden">Free</span></h3>
-          <div class="text-4xl font-bold mb-1 text-main">$0 <span class="text-lg font-normal text-muted">/forever</span></div>
+        <div class="bg-white/5 border border-white/10 rounded-2xl p-8">
+          <h3 class="text-xl font-bold mb-2"><span class="zh">免费版</span><span class="en hidden">Free</span></h3>
+          <div class="text-4xl font-bold mb-1">$0 <span class="text-lg font-normal text-gray-400">/forever</span></div>
           <ul class="space-y-3 mt-6 mb-8 text-sm">
-            <li class="flex items-center gap-2 text-muted">✅ <span class="zh">每天 3 次</span><span class="en hidden">3/day</span></li>
-            <li class="flex items-center gap-2 text-muted">✅ <span class="zh">基础食谱</span><span class="en hidden">Basic recipes</span></li>
-            <li class="flex items-center gap-2 text-muted">✅ <span class="zh">中英文</span><span class="en hidden">CN/EN</span></li>
-            <li class="flex items-center gap-2 text-muted opacity-50">❌ <span class="zh">营养估算</span><span class="en hidden">Nutrition</span></li>
+            <li class="flex items-center gap-2">✅ <span class="zh">每天 3 次</span><span class="en hidden">3/day</span></li>
+            <li class="flex items-center gap-2">✅ <span class="zh">基础食谱</span><span class="en hidden">Basic recipes</span></li>
+            <li class="flex items-center gap-2">✅ <span class="zh">中英文</span><span class="en hidden">CN/EN</span></li>
+            <li class="flex items-center gap-2 opacity-50">❌ <span class="zh">营养估算</span><span class="en hidden">Nutrition</span></li>
           </ul>
-          <a href="#waitlist" class="block w-full py-3 rounded-xl border border-card text-center font-medium hover:bg-card text-main"><span class="zh">免费加入</span><span class="en hidden">Join Free</span></a>
+          <a href="#waitlist" class="block w-full py-3 rounded-xl border border-white/20 text-center font-medium hover:bg-white/10"><span class="zh">免费加入</span><span class="en hidden">Join Free</span></a>
         </div>
         <div class="bg-gradient-to-br from-orange-600/30 to-purple-600/30 border border-orange-500/50 rounded-2xl p-8 relative">
-          <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-orange-500 to-purple-500 text-xs font-bold px-4 py-1 rounded-full text-white"><span class="zh">最受欢迎</span><span class="en hidden">POPULAR</span></div>
-          <h3 class="text-xl font-bold mb-2 text-main"><span class="zh">专业版</span><span class="en hidden">Pro</span></h3>
-          <div class="text-4xl font-bold mb-1 text-main">$4.9 <span class="text-lg font-normal text-muted">/月</span></div>
+          <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-orange-500 to-purple-500 text-xs font-bold px-4 py-1 rounded-full"><span class="zh">最受欢迎</span><span class="en hidden">POPULAR</span></div>
+          <h3 class="text-xl font-bold mb-2"><span class="zh">专业版</span><span class="en hidden">Pro</span></h3>
+          <div class="text-4xl font-bold mb-1">$4.9 <span class="text-lg font-normal text-gray-400">/月</span></div>
           <ul class="space-y-3 mt-6 mb-8 text-sm">
-            <li class="flex items-center gap-2 text-muted">✅ <span class="zh">无限次数</span><span class="en hidden">Unlimited</span></li>
-            <li class="flex items-center gap-2 text-muted">✅ <span class="zh">营养估算</span><span class="en hidden">Nutrition</span></li>
-            <li class="flex items-center gap-2 text-muted">✅ <span class="zh">优先队列</span><span class="en hidden">Priority</span></li>
-            <li class="flex items-center gap-2 text-muted">✅ <span class="zh">收藏保存</span><span class="en hidden">Save</span></li>
+            <li class="flex items-center gap-2">✅ <span class="zh">无限次数</span><span class="en hidden">Unlimited</span></li>
+            <li class="flex items-center gap-2">✅ <span class="zh">营养估算</span><span class="en hidden">Nutrition</span></li>
+            <li class="flex items-center gap-2">✅ <span class="zh">优先队列</span><span class="en hidden">Priority</span></li>
+            <li class="flex items-center gap-2">✅ <span class="zh">收藏保存</span><span class="en hidden">Save</span></li>
           </ul>
-          <a href="#waitlist" class="btn-primary block w-full py-3 rounded-xl text-center font-medium text-white"><span class="zh">立即升级</span><span class="en hidden">Upgrade</span></a>
+          <a href="#waitlist" class="btn-primary block w-full py-3 rounded-xl text-center font-medium"><span class="zh">立即升级</span><span class="en hidden">Upgrade</span></a>
         </div>
       </div>
     </div>
   </section>
 
   <!-- Waitlist -->
-  <section id="waitlist" class="py-20 px-6 bg-main">
+  <section id="waitlist" class="py-20 px-6">
     <div class="max-w-2xl mx-auto text-center">
-      <h2 class="text-3xl font-bold mb-4 text-main">
+      <h2 class="text-3xl font-bold mb-4">
         <span class="zh">加入等待列表</span>
         <span class="en hidden">Join Waitlist</span>
       </h2>
-      <p class="text-muted mb-8">
+      <p class="text-gray-400 mb-8">
         <span class="zh">首批用户享受专属优惠，快来加入吧！</span>
         <span class="en hidden">Get early access and exclusive discounts!</span>
       </p>
       <form id="waitlistForm" class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" onsubmit="handleSubmit(event)">
-        <input type="email" id="email" required placeholder="your@email.com" class="flex-1 bg-card border border-card rounded-xl px-4 py-3 text-main placeholder-muted focus:outline-none focus:border-orange-500">
-        <button type="submit" class="btn-primary px-6 py-3 rounded-xl font-semibold whitespace-nowrap flex items-center justify-center gap-2 text-white">
+        <input type="email" id="email" required placeholder="your@email.com" class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500">
+        <button type="submit" class="btn-primary px-6 py-3 rounded-xl font-semibold whitespace-nowrap flex items-center justify-center gap-2">
           <span id="btnText"><span class="zh">立即加入</span><span class="en hidden">Join</span></span>
           <div id="spinner" class="spinner hidden"></div>
         </button>
       </form>
-      <p id="successMsg" class="hidden mt-4 text-green-500 font-medium">
+      <p id="successMsg" class="hidden mt-4 text-green-400">
         <span class="zh">✅ 感谢！已加入等待列表</span>
         <span class="en hidden">✅ Thanks! You're on the list</span>
       </p>
@@ -374,37 +337,28 @@
   </section>
 
   <!-- Footer -->
-  <footer class="border-t border-card py-8 px-6">
-    <div class="max-w-6xl mx-auto text-center text-muted text-sm">
+  <footer class="border-t border-white/10 py-8 px-6">
+    <div class="max-w-6xl mx-auto text-center text-gray-500 text-sm">
       <p>© 2026 RecipeAI. Powered by AI.</p>
     </div>
   </footer>
 
   <script>
-    // Theme
-    function toggleTheme() {
-      const isDark = document.body.classList.contains('dark');
-      document.body.classList.toggle('dark');
-      document.body.classList.toggle('light');
-      document.getElementById('themeBtn').textContent = isDark ? '☀️' : '🌙';
-      localStorage.setItem('theme', isDark ? 'light' : 'dark');
-    }
-    
-    // Init theme
-    const savedTheme = localStorage.getItem('theme') || 'dark';
-    document.body.classList.add(savedTheme);
-    document.getElementById('themeBtn').textContent = savedTheme === 'dark' ? '🌙' : '☀️';
-    
-    // Language
-    function setLang(lang) {
+    // Language toggle
+    function switchLang(lang) {
       document.querySelectorAll('.zh, .en').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.' + lang).forEach(el => el.classList.remove('hidden'));
-      document.querySelectorAll('.lang-btn').forEach(el => el.classList.remove('bg-orange-500', 'text-white'));
-      event.target.classList.add('bg-orange-500', 'text-white');
+      document.getElementById('btnZh').classList.toggle('active', lang === 'zh');
+      document.getElementById('btnEn').classList.toggle('active', lang === 'en');
       document.documentElement.lang = lang;
+      localStorage.setItem('lang', lang);
     }
     
-    // Waitlist
+    // Init language
+    const savedLang = localStorage.getItem('lang') || 'zh';
+    switchLang(savedLang);
+    
+    // Waitlist form
     function handleSubmit(e) {
       e.preventDefault();
       const email = document.getElementById('email').value.trim();

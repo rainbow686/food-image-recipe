@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Food Image to Recipe Generator | AI 食谱生成器</title>
+  <meta name="description" content="Turn food photos into recipes with AI. Snap a photo, get a complete recipe with ingredients and instructions.">
+  <link rel="canonical" href="https://food-image-recipe.vercel.app/">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%); }
+    .btn-primary { background: linear-gradient(135deg, #f97316, #ea580c); transition: all 0.2s; }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 25px rgba(249, 115, 22, 0.4); }
+    .spinner { border: 3px solid rgba(255,255,255,0.2); border-top-color: white; border-radius: 50%; width: 20px; height: 20px; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .fade-in { animation: fadeIn 0.5s ease-in; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .lang-toggle { cursor: pointer; padding: 4px 12px; border-radius: 20px; background: rgba(255,255,255,0.1); transition: all 0.2s; }
+    .lang-toggle:hover { background: rgba(255,255,255,0.2); }
+    .lang-toggle.active { background: #f97316; }
+  </style>
+</head>
+<body class="gradient-bg min-h-screen text-white">
+  <!-- Header -->
+  <header class="border-b border-white/10">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="#" class="text-xl font-bold flex items-center gap-2">
+        <span class="text-2xl">🍳</span>
+        <span class="zh">AI 食谱生成器</span>
+        <span class="en">AI Recipe Generator</span>
+      </a>
+      <div class="flex items-center gap-4">
+        <span class="lang-toggle zh active" onclick="setLang('zh')">中文</span>
+        <span class="lang-toggle en" onclick="setLang('en')">EN</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="py-20 px-6">
+    <div class="max-w-4xl mx-auto text-center">
+      <div class="text-6xl mb-6">📸 → 📝</div>
+      <h1 class="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+        <span class="zh">拍照识别食材，AI 生成食谱</span>
+        <span class="en hidden">Snap a Photo, Get a Recipe</span>
+      </h1>
+      <p class="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+        <span class="zh">上传食物照片，AI 自动识别食材并生成完整食谱。冰箱剩菜、餐厅美食、一张照片即可复刻！</span>
+        <span class="en hidden">Upload a photo of any dish, and our AI will identify ingredients and generate a complete recipe. Perfect for leftover ingredients, restaurant favorites, or creative cooking!</span>
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="#waitlist" class="btn-primary px-8 py-4 rounded-xl font-semibold text-lg inline-block">
+          <span class="zh">🚀 立即预订</span>
+          <span class="en hidden">🚀 Join Waitlist</span>
+        </a>
+        <a href="#features" class="px-8 py-4 rounded-xl font-semibold text-lg border border-white/20 hover:bg-white/10 transition-colors">
+          <span class="zh">了解更多</span>
+          <span class="en hidden">Learn More</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features" class="py-16 px-6 bg-white/5">
+    <div class="max-w-6xl mx-auto">
+      <h2 class="text-3xl font-bold text-center mb-12">
+        <span class="zh">核心功能</span>
+        <span class="en hidden">Key Features</span>
+      </h2>
+      <div class="grid md:grid-cols-3 gap-8">
+        <!-- Feature 1 -->
+        <div class="bg-white/5 border border-white/10 rounded-2xl p-8 text-center">
+          <div class="text-4xl mb-4">📷</div>
+          <h3 class="text-xl font-bold mb-3">
+            <span class="zh">拍照识别</span>
+            <span class="en hidden">Photo Recognition</span>
+          </h3>
+          <p class="text-gray-400 text-sm">
+            <span class="zh">上传照片，AI 精准识别食材和菜品</span>
+            <span class="en hidden">Upload any photo, our AI identifies ingredients and dishes with high accuracy</span>
+          </p>
+        </div>
+        <!-- Feature 2 -->
+        <div class="bg-white/5 border border-white/10 rounded-2xl p-8 text-center">
+          <div class="text-4xl mb-4">📋</div>
+          <h3 class="text-xl font-bold mb-3">
+            <span class="zh">完整食谱</span>
+            <span class="en hidden">Complete Recipes</span>
+          </h3>
+          <p class="text-gray-400 text-sm">
+            <span class="zh">生成包含食材、步骤、时间的完整食谱</span>
+            <span class="en hidden">Get complete recipes with ingredients, steps, and cooking time</span>
+          </p>
+        </div>
+        <!-- Feature 3 -->
+        <div class="bg-white/5 border border-white/10 rounded-2xl p-8 text-center">
+          <div class="text-4xl mb-4">🌍</div>
+          <h3 class="text-xl font-bold mb-3">
+            <span class="zh">多菜系支持</span>
+            <span class="en hidden">Multiple Cuisines</span>
+          </h3>
+          <p class="text-gray-400 text-sm">
+            <span class="zh">支持中餐、西餐、日料等全球菜系</span>
+            <span class="en hidden">Support for Chinese, Western, Japanese cuisines and more</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Use Cases -->
+  <section class="py-16 px-6">
+    <div class="max-w-6xl mx-auto">
+      <h2 class="text-3xl font-bold text-center mb-12">
+        <span class="zh">使用场景</span>
+        <span class="en hidden">Use Cases</span>
+      </h2>
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="bg-gradient-to-br from-orange-500/20 to-red-500/20 border border-orange-500/30 rounded-2xl p-6">
+          <div class="text-3xl mb-3">🧊</div>
+          <h3 class="font-bold mb-2">
+            <span class="zh">冰箱剩菜</span>
+            <span class="en hidden">Leftover Ingredients</span>
+          </h3>
+          <p class="text-gray-400 text-sm">
+            <span class="zh">冰箱里有剩菜？拍照→AI告诉你能做什么</span>
+            <span class="en hidden">Have leftover ingredients? Snap a photo → AI tells you what to cook</span>
+          </p>
+        </div>
+        <div class="bg-gradient-to-br from-orange-500/20 to-red-500/20 border border-orange-500/30 rounded-2xl p-6">
+          <div class="text-3xl mb-3">🍽️</div>
+          <h3 class="font-bold mb-2">
+            <span class="zh">餐厅复刻</span>
+            <span class="en hidden">Restaurant Copy</span>
+          </h3>
+          <p class="text-gray-400 text-sm">
+            <span class="zh">餐厅吃到好吃的菜？拍照→在家复刻</span>
+            <span class="en hidden">Tried a great dish at a restaurant? Recreate it at home</span>
+          </p>
+        </div>
+        <div class="bg-gradient-to-br from-orange-500/20 to-red-500/20 border border-orange-500/30 rounded-2xl p-6">
+          <div class="text-3xl mb-3">🎵</div>
+          <h3 class="font-bold mb-2">
+            <span class="zh">社交媒体</span>
+            <span class="en hidden">Social Media</span>
+          </h3>
+          <p class="text-gray-400 text-sm">
+            <span class="zh">看到美食视频？粘贴链接→自动提取食谱</span>
+            <span class="en hidden">Saw a food video? Paste link → auto-extract recipe</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Waitlist -->
+  <section id="waitlist" class="py-16 px-6 bg-white/5">
+    <div class="max-w-2xl mx-auto text-center">
+      <h2 class="text-3xl font-bold mb-4">
+        <span class="zh">即将上线，敬请期待</span>
+        <span class="en hidden">Coming Soon</span>
+      </h2>
+      <p class="text-gray-400 mb-8">
+        <span class="zh">留下邮箱，首批体验并享受专属优惠</span>
+        <span class="en hidden">Leave your email to get early access and exclusive offers</span>
+      </p>
+      <form id="waitlistForm" class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" onsubmit="handleSubmit(event)">
+        <input type="email" id="email" required placeholder="your@email.com" 
+          class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500">
+        <button type="submit" class="btn-primary px-6 py-3 rounded-xl font-semibold whitespace-nowrap flex items-center justify-center gap-2">
+          <span id="btnText">
+            <span class="zh">立即预订</span>
+            <span class="en hidden">Join</span>
+          </span>
+          <div id="spinner" class="spinner hidden"></div>
+        </button>
+      </form>
+      <p id="successMsg" class="hidden mt-4 text-green-400">
+        <span class="zh">✅ 感谢！已加入等待列表</span>
+        <span class="en hidden">✅ Thanks! You've been added to the waitlist</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-white/10 py-8 px-6">
+    <div class="max-w-6xl mx-auto text-center text-gray-500 text-sm">
+      <p>© 2026 Food Image to Recipe Generator. Powered by AI.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Language toggle
+    function setLang(lang) {
+      document.querySelectorAll('.zh, .en').forEach(el => {
+        el.classList.add('hidden');
+      });
+      document.querySelectorAll('.' + lang).forEach(el => {
+        el.classList.remove('hidden');
+      });
+      document.querySelectorAll('.lang-toggle').forEach(el => {
+        el.classList.remove('active');
+      });
+      document.querySelector('.lang-toggle.' + lang).classList.add('active');
+      document.documentElement.lang = lang;
+    }
+
+    // Email collection (store in localStorage for MVP)
+    function handleSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      if (!email) return;
+
+      const btn = e.target.querySelector('button');
+      const spinner = document.getElementById('spinner');
+      const btnText = document.getElementById('btnText');
+
+      btn.disabled = true;
+      btnText.classList.add('hidden');
+      spinner.classList.remove('hidden');
+
+      // Save to localStorage (MVP - later connect to database)
+      const waitlist = JSON.parse(localStorage.getItem('waitlist') || '[]');
+      if (!waitlist.includes(email)) {
+        waitlist.push(email);
+        localStorage.setItem('waitlist', JSON.stringify(waitlist));
+        console.log('Email added:', email);
+      }
+
+      setTimeout(() => {
+        document.getElementById('waitlistForm').classList.add('hidden');
+        document.getElementById('successMsg').classList.remove('hidden');
+      }, 1000);
+    }
+  </script>
+</body>
+</html>

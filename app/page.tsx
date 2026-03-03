@@ -267,6 +267,32 @@ export default function Home() {
               : "Upload a food photo, AI identifies and generates recipe"}
           </p>
 
+          {/* Test API Button - Visible in Main Area */}
+          <div className="text-center mb-6">
+            <button
+              onClick={async () => {
+                try {
+                  const res = await fetch('/api/fal', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      image_url: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400',
+                      prompt: 'What is this?',
+                      model: 'llava'
+                    })
+                  });
+                  const data = await res.json();
+                  alert('Status: ' + res.status + '\n' + JSON.stringify(data).substring(0, 300));
+                } catch (e: any) {
+                  alert('Error: ' + (e?.message || e));
+                }
+              }}
+              className="btn-primary px-6 py-2"
+            >
+              {lang === "zh" ? "🧪 测试API是否可用" : "🧪 Test API"}
+            </button>
+          </div>
+
           {/* Upload Area */}
           <div className="card rounded-2xl p-8 mb-6">
             <div

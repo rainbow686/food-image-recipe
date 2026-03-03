@@ -222,6 +222,28 @@ export default function Home() {
               <span>☀️</span>
               <span>🌙</span>
             </div>
+            <button
+              onClick={async () => {
+                try {
+                  const res = await fetch('/api/fal', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      image_url: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400',
+                      prompt: 'What is this?',
+                      model: 'llava'
+                    })
+                  });
+                  const data = await res.json();
+                  alert('Status: ' + res.status + '\n' + JSON.stringify(data).substring(0, 200));
+                } catch (e) {
+                  alert('Error: ' + e.message);
+                }
+              }}
+              className="btn-secondary text-xs px-3 py-1"
+            >
+              {lang === "zh" ? "测试API" : "Test API"}
+            </button>
           </div>
         </div>
       </header>

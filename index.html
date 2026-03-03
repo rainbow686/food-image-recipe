@@ -4,503 +4,200 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Food Image to Recipe | AI Recipe Generator</title>
-  <meta name="description" content="Turn food photos into recipes with AI. Snap a photo, get a complete recipe with ingredients and instructions.">
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Plus Jakarta Sans', 'sans-serif'],
-          },
-          colors: {
-            primary: '#10b981',
-            'primary-dark': '#059669',
-          }
-        }
-      }
-    }
-  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { 
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      -webkit-font-smoothing: antialiased;
-    }
+    body { -webkit-font-smoothing: antialiased; }
     
-    /* Light theme (default) */
-    .theme-light {
-      --bg-primary: #ffffff;
-      --bg-secondary: #fafafa;
-      --bg-tertiary: #f4f4f5;
-      --text-primary: #18181b;
-      --text-secondary: #52525b;
-      --text-muted: #a1a1aa;
-      --border: #e4e4e7;
-      --border-subtle: #f1f1f4;
-      --accent: #10b981;
-      --accent-soft: rgba(16, 185, 129, 0.1);
-    }
+    /* STYLE 1: MINIMALISM */
+    .style-minimal { --bg-primary: #ffffff; --bg-secondary: #fafafa; --bg-tertiary: #f4f4f5; --text-primary: #18181b; --text-secondary: #52525b; --text-muted: #a1a1aa; --border: #e4e4e7; --accent: #10b981; --accent-soft: rgba(16, 185, 129, 0.1); font-family: 'Plus Jakarta Sans', sans-serif; }
+    .style-minimal.theme-dark { --bg-primary: #09090b; --bg-secondary: #18181b; --bg-tertiary: #27272a; --text-primary: #fafafa; --text-secondary: #a1a1aa; --text-muted: #71717a; --border: #27272a; }
     
-    /* Dark theme */
-    .theme-dark {
-      --bg-primary: #09090b;
-      --bg-secondary: #18181b;
-      --bg-tertiary: #27272a;
-      --text-primary: #fafafa;
-      --text-secondary: #a1a1aa;
-      --text-muted: #71717a;
-      --border: #27272a;
-      --border-subtle: #1f1f23;
-      --accent: #10b981;
-      --accent-soft: rgba(16, 185, 129, 0.15);
-    }
+    /* STYLE 2: GLASSMORPHISM */
+    .style-glass { font-family: 'Inter', sans-serif; }
+    .style-glass::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(ellipse 80% 60% at 20% 10%, rgba(139, 92, 246, 0.2), transparent 50%), radial-gradient(ellipse 60% 50% at 80% 20%, rgba(236, 72, 153, 0.15), transparent 50%), radial-gradient(ellipse 50% 40% at 50% 80%, rgba(59, 130, 246, 0.1), transparent 50%), #0f0f1a; z-index: -1; }
+    .style-glass { --bg-primary: transparent; --bg-secondary: rgba(255, 255, 255, 0.05); --bg-tertiary: rgba(255, 255, 255, 0.08); --text-primary: #ffffff; --text-secondary: rgba(255, 255, 255, 0.7); --text-muted: rgba(255, 255, 255, 0.5); --border: rgba(255, 255, 255, 0.1); --accent: #a78bfa; --accent-soft: rgba(167, 139, 250, 0.15); color: #fff; }
     
-    /* Background patterns */
-    .bg-dots {
-      background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
-      background-size: 24px 24px;
-    }
+    /* STYLE 3: NEO-M3 */
+    .style-neo { font-family: 'Space Grotesk', sans-serif; }
+    .style-neo::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #fafafa; z-index: -1; }
+    .style-neo.theme-dark::before { background: #0a0a0a; }
+    .style-neo { --bg-primary: #fafafa; --bg-secondary: #ffffff; --bg-tertiary: #f4f4f5; --text-primary: #000000; --text-secondary: #444444; --text-muted: #888888; --border: #000000; --accent: #000000; color: #000; }
+    .style-neo.theme-dark { --bg-primary: #0a0a0a; --bg-secondary: #111111; --bg-tertiary: #1a1a1a; --text-primary: #ffffff; --text-secondary: #cccccc; --text-muted: #666666; --border: #ffffff; --accent: #ffffff; color: #fff; }
     
-    /* Ambient gradient */
-    .bg-ambient {
-      background: 
-        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(16, 185, 129, 0.08), transparent),
-        radial-gradient(ellipse 60% 40% at 100% 0%, rgba(16, 185, 129, 0.05), transparent);
-    }
+    .card { background: var(--bg-secondary); border: 1px solid var(--border); transition: all 0.2s ease; }
+    .style-minimal .card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .style-glass .card { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.15); }
+    .style-glass .card:hover { background: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.25); transform: translateY(-2px); }
+    .style-neo .card { border: 2px solid var(--border); border-radius: 0; }
+    .style-neo .card:hover { transform: translate(-4px, -4px); box-shadow: 6px 6px 0 var(--border); }
     
-    .theme-dark .bg-ambient {
-      background: 
-        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(16, 185, 129, 0.12), transparent),
-        radial-gradient(ellipse 60% 40% at 100% 0%, rgba(16, 185, 129, 0.08), transparent);
-    }
+    .btn-primary { font-weight: 600; transition: all 0.2s ease; }
+    .style-minimal .btn-primary { background: #10b981; color: white; border-radius: 9999px; }
+    .style-minimal .btn-primary:hover { background: #059669; transform: translateY(-1px); box-shadow: 0 8px 20px rgba(16, 185, 129, 0.25); }
+    .style-glass .btn-primary { background: linear-gradient(135deg, #a78bfa, #8b5cf6); color: white; border-radius: 9999px; border: none; }
+    .style-glass .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(167, 139, 250, 0.4); }
+    .style-neo .btn-primary { background: var(--accent); color: var(--bg-primary); border: 2px solid var(--border); border-radius: 0; }
+    .style-neo .btn-primary:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--border); }
     
-    /* Cards */
-    .card {
-      background: var(--bg-secondary);
-      border: 1px solid var(--border);
-      transition: all 0.2s ease;
-    }
-    .card:hover {
-      border-color: var(--accent);
-      transform: translateY(-2px);
-    }
+    .btn-secondary { background: transparent; border: 1px solid var(--border); font-weight: 500; transition: all 0.2s ease; }
+    .style-minimal .btn-secondary { color: var(--text-primary); border-radius: 9999px; }
+    .style-glass .btn-secondary { color: #fff; border-color: rgba(255,255,255,0.2); border-radius: 9999px; }
+    .style-neo .btn-secondary { color: var(--text-primary); border: 2px solid var(--border); border-radius: 0; }
     
-    /* Buttons */
-    .btn-primary {
-      background: var(--accent);
-      color: white;
-      font-weight: 600;
-      transition: all 0.2s ease;
-    }
-    .btn-primary:hover {
-      background: #059669;
-      transform: translateY(-1px);
-      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.25);
-    }
-    .btn-secondary {
-      background: transparent;
-      color: var(--text-primary);
-      border: 1px solid var(--border);
-      font-weight: 500;
-      transition: all 0.2s ease;
-    }
-    .btn-secondary:hover {
-      border-color: var(--text-muted);
-      background: var(--bg-tertiary);
-    }
+    .icon-box { width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: 16px; }
+    .style-minimal .icon-box { background: var(--accent-soft); border: 1px solid rgba(16, 185, 129, 0.2); }
+    .style-glass .icon-box { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.15); }
+    .style-neo .icon-box { background: var(--bg-tertiary); border: 2px solid var(--border); border-radius: 0; }
     
-    /* Icon boxes */
-    .icon-box {
-      width: 56px;
-      height: 56px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 16px;
-      background: var(--accent-soft);
-      border: 1px solid rgba(16, 185, 129, 0.2);
-    }
+    .step-num { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 12px; font-weight: 700; }
+    .style-minimal .step-num { background: var(--accent-soft); color: var(--accent); border: 1px solid rgba(16, 185, 129, 0.2); }
+    .style-glass .step-num { background: rgba(255, 255, 255, 0.1); color: #a78bfa; border: 1px solid rgba(255, 255, 255, 0.15); }
+    .style-neo .step-num { background: var(--bg-tertiary); color: var(--text-primary); border: 2px solid var(--border); border-radius: 0; }
     
-    /* Step numbers */
-    .step-num {
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 12px;
-      font-size: 14px;
-      font-weight: 700;
-      background: var(--accent-soft);
-      color: var(--accent);
-      border: 1px solid rgba(16, 185, 129, 0.2);
-    }
+    .theme-toggle { width: 44px; height: 24px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 12px; cursor: pointer; position: relative; }
+    .theme-toggle::after { content: ''; position: absolute; width: 18px; height: 18px; background: var(--text-primary); border-radius: 50%; top: 2px; left: 2px; transition: all 0.2s ease; }
+    .theme-dark .theme-toggle::after { left: 22px; }
     
-    /* Theme toggle */
-    .theme-toggle {
-      width: 44px;
-      height: 24px;
-      background: var(--bg-tertiary);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      cursor: pointer;
-      position: relative;
-      transition: all 0.2s ease;
-    }
-    .theme-toggle::after {
-      content: '';
-      position: absolute;
-      width: 18px;
-      height: 18px;
-      background: var(--text-primary);
-      border-radius: 50%;
-      top: 2px;
-      left: 2px;
-      transition: all 0.2s ease;
-    }
-    .theme-dark .theme-toggle::after {
-      left: 22px;
-    }
+    .style-selector { display: flex; gap: 4px; background: var(--bg-tertiary); padding: 4px; border-radius: 10px; border: 1px solid var(--border); }
+    .style-btn { padding: 6px 12px; border-radius: 8px; font-size: 16px; cursor: pointer; background: transparent; border: none; }
+    .style-btn.active { background: var(--bg-primary); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
     
-    /* Language buttons */
-    .lang-btn {
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      color: var(--text-muted);
-      background: transparent;
-    }
-    .lang-btn:hover {
-      color: var(--text-secondary);
-      background: var(--bg-tertiary);
-    }
-    .lang-btn.active {
-      color: var(--text-primary);
-      background: var(--bg-tertiary);
-    }
+    .lang-btn { padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; background: transparent; color: var(--text-muted); border: none; }
+    .lang-btn.active { color: var(--text-primary); background: var(--bg-tertiary); }
     
-    /* Pricing highlight */
-    .pricing-popular {
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
-      border-color: rgba(16, 185, 129, 0.3);
-    }
+    .pricing-popular { border-color: var(--accent); }
+    .style-minimal .pricing-popular { background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05)); }
+    .style-glass .pricing-popular { background: linear-gradient(135deg, rgba(167, 139, 250, 0.2), rgba(139, 92, 246, 0.1)); border-color: rgba(167, 139, 250, 0.4); }
+    .style-neo .pricing-popular { border-width: 3px; }
     
-    /* Animations */
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .animate-fade-in {
-      animation: fadeInUp 0.5s ease forwards;
-    }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-fade-in { animation: fadeInUp 0.5s ease forwards; }
     .delay-100 { animation-delay: 0.1s; }
     .delay-200 { animation-delay: 0.2s; }
     .delay-300 { animation-delay: 0.3s; }
     
-    /* Spinner */
-    .spinner {
-      border: 2px solid rgba(255, 255, 255, 0.2);
-      border-top-color: white;
-      border-radius: 50%;
-      width: 16px;
-      height: 16px;
-      animation: spin 0.8s linear infinite;
-    }
+    .spinner { border: 2px solid rgba(255, 255, 255, 0.2); border-top-color: white; border-radius: 50%; width: 16px; height: 16px; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
-<body class="theme-light min-h-screen" style="background: var(--bg-primary); color: var(--text-primary);">
+<body class="style-minimal min-h-screen">
   
-  <!-- Header -->
-  <header class="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl" style="background: rgba(255, 255, 255, 0.8); border-bottom: 1px solid var(--border);">
-    <div class="theme-dark" style="background: rgba(9, 9, 11, 0.8);">
-      <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-        <a href="#" class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background: var(--accent);">
-            <span class="text-white text-lg">🍳</span>
-          </div>
-          <span class="font-semibold text-sm" style="color: var(--text-primary);"><span class="zh">食谱AI</span><span class="en hidden">RecipeAI</span></span>
-        </a>
-        <nav class="hidden md:flex items-center gap-8">
-          <a href="#how-it-works" class="text-sm" style="color: var(--text-secondary);">
-            <span class="zh">使用流程</span><span class="en hidden">How It Works</span>
-          </a>
-          <a href="#features" class="text-sm" style="color: var(--text-secondary);">
-            <span class="zh">功能</span><span class="en hidden">Features</span>
-          </a>
-          <a href="#pricing" class="text-sm" style="color: var(--text-secondary);">
-            <span class="zh">价格</span><span class="en hidden">Pricing</span>
-          </a>
-        </nav>
-        <div class="flex items-center gap-3">
-          <button onclick="switchLang('zh')" class="lang-btn active" id="btnZh">中文</button>
-          <button onclick="switchLang('en')" class="lang-btn" id="btnEn">EN</button>
-          <div class="theme-toggle" onclick="toggleTheme()" title="Toggle theme"></div>
+  <header class="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl" style="background: var(--bg-primary); border-bottom: 1px solid var(--border);">
+    <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="#" class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background: var(--accent);"><span class="text-white text-lg">🍳</span></div>
+        <span class="font-semibold text-sm" style="color: var(--text-primary);"><span class="zh">食谱AI</span><span class="en hidden">RecipeAI</span></span>
+      </a>
+      <nav class="hidden md:flex items-center gap-8">
+        <a href="#how-it-works" class="text-sm" style="color: var(--text-secondary);"><span class="zh">使用流程</span><span class="en hidden">How It Works</span></a>
+        <a href="#features" class="text-sm" style="color: var(--text-secondary);"><span class="zh">功能</span><span class="en hidden">Features</span></a>
+        <a href="#pricing" class="text-sm" style="color: var(--text-secondary);"><span class="zh">价格</span><span class="en hidden">Pricing</span></a>
+      </nav>
+      <div class="flex items-center gap-3">
+        <div class="style-selector">
+          <button onclick="switchStyle('minimal')" class="style-btn active" id="styleMinimal" title="Minimalism">✨</button>
+          <button onclick="switchStyle('glass')" class="style-btn" id="styleGlass" title="Glassmorphism">🔮</button>
+          <button onclick="switchStyle('neo')" class="style-btn" id="styleNeo" title="Neo-M3">⚡</button>
         </div>
+        <button onclick="switchLang('zh')" class="lang-btn active" id="btnZh">中文</button>
+        <button onclick="switchLang('en')" class="lang-btn" id="btnEn">EN</button>
+        <div class="theme-toggle" onclick="toggleTheme()" title="Toggle theme"></div>
       </div>
     </div>
   </header>
 
-  <!-- Hero -->
-  <section class="pt-36 pb-24 px-6 bg-dots bg-ambient">
+  <section class="pt-36 pb-24 px-6" style="background: var(--bg-primary);">
     <div class="max-w-3xl mx-auto text-center">
-      
-      <!-- Badge -->
       <div class="animate-fade-in inline-flex items-center gap-2 rounded-full px-4 py-2 mb-8" style="background: var(--accent-soft); border: 1px solid rgba(16, 185, 129, 0.2);">
-        <span class="w-2 h-2 rounded-full" style="background: #10b981;"></span>
-        <span class="text-sm" style="color: var(--text-secondary);">
-          <span class="zh">即将上线 · 首批用户专享优惠</span>
-          <span class="en hidden">Coming Soon · Early Access</span>
-        </span>
+        <span class="w-2 h-2 rounded-full" style="background: var(--accent);"></span>
+        <span class="text-sm" style="color: var(--text-secondary);"><span class="zh">即将上线 · 首批用户专享优惠</span><span class="en hidden">Coming Soon · Early Access</span></span>
       </div>
-      
-      <!-- Headline -->
-      <h1 class="animate-fade-in delay-100 text-4xl md:text-5xl font-bold mb-6 leading-tight tracking-tight" style="color: var(--text-primary);">
+      <h1 class="animate-fade-in delay-100 text-4xl md:text-5xl font-bold mb-6 leading-tight" style="color: var(--text-primary);">
         <span class="zh">拍照识别食材<br><span style="color: var(--accent);">AI 生成食谱</span></span>
         <span class="en hidden">Snap a Photo<br><span style="color: var(--accent);">Get a Recipe</span></span>
       </h1>
-      
-      <!-- Subtitle -->
-      <p class="animate-fade-in delay-200 text-lg md:text-xl mb-10 max-w-xl mx-auto leading-relaxed" style="color: var(--text-secondary);">
-        <span class="zh">上传食物照片，AI 自动识别食材并生成完整食谱。餐厅美食、冰箱剩菜、社交媒体美食，一键复刻！</span>
-        <span class="en hidden">Upload any food photo and AI will identify ingredients and generate complete recipes with steps and instructions.</span>
+      <p class="animate-fade-in delay-200 text-lg md:text-xl mb-10 max-w-xl mx-auto" style="color: var(--text-secondary);">
+        <span class="zh">上传食物照片，AI 自动识别食材并生成完整食谱。</span>
+        <span class="en hidden">Upload any food photo and AI will generate complete recipes.</span>
       </p>
-      
-      <!-- CTAs -->
       <div class="animate-fade-in delay-300 flex flex-col sm:flex-row gap-3 justify-center">
-        <a href="#waitlist" class="btn-primary px-7 py-3 rounded-full text-sm inline-flex items-center justify-center gap-2">
-          <span class="zh">免费加入等待列表</span>
-          <span class="en hidden">Join Waitlist - Free</span>
-        </a>
-        <a href="#how-it-works" class="btn-secondary px-7 py-3 rounded-full text-sm inline-flex items-center justify-center gap-2">
-          <span class="zh">了解更多</span>
-          <span class="en hidden">Learn More</span>
-        </a>
+        <a href="#waitlist" class="btn-primary px-7 py-3 rounded-full text-sm inline-flex items-center justify-center gap-2"><span class="zh">免费加入等待列表</span><span class="en hidden">Join Waitlist</span></a>
+        <a href="#how-it-works" class="btn-secondary px-7 py-3 rounded-full text-sm inline-flex items-center justify-center gap-2"><span class="zh">了解更多</span><span class="en hidden">Learn More</span></a>
       </div>
-      
-      <!-- Demo flow -->
       <div class="animate-fade-in delay-300 mt-12 text-3xl md:text-4xl opacity-40" style="color: var(--text-muted);">📸 → 🤖 → 📝 → 🍽️</div>
     </div>
   </section>
 
-  <!-- Stats -->
   <section class="py-12 px-6" style="background: var(--bg-secondary); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
     <div class="max-w-2xl mx-auto">
       <div class="grid grid-cols-3 gap-8 text-center">
-        <div>
-          <div class="text-3xl font-bold" style="color: var(--text-primary);">50K+</div>
-          <div class="text-sm mt-1" style="color: var(--text-muted);">
-            <span class="zh">等待用户</span>
-            <span class="en hidden">Waiting</span>
-          </div>
-        </div>
-        <div>
-          <div class="text-3xl font-bold" style="color: var(--text-primary);">100K+</div>
-          <div class="text-sm mt-1" style="color: var(--text-muted);">
-            <span class="zh">食谱生成</span>
-            <span class="en hidden">Generated</span>
-          </div>
-        </div>
-        <div>
-          <div class="text-3xl font-bold" style="color: var(--text-primary);">98%</div>
-          <div class="text-sm mt-1" style="color: var(--text-muted);">
-            <span class="zh">识别准确率</span>
-            <span class="en hidden">Accuracy</span>
-          </div>
-        </div>
+        <div><div class="text-3xl font-bold" style="color: var(--text-primary);">50K+</div><div class="text-sm mt-1" style="color: var(--text-muted);"><span class="zh">等待用户</span><span class="en hidden">Waiting</span></div></div>
+        <div><div class="text-3xl font-bold" style="color: var(--text-primary);">100K+</div><div class="text-sm mt-1" style="color: var(--text-muted);"><span class="zh">食谱生成</span><span class="en hidden">Generated</span></div></div>
+        <div><div class="text-3xl font-bold" style="color: var(--text-primary);">98%</div><div class="text-sm mt-1" style="color: var(--text-muted);"><span class="zh">识别准确率</span><span class="en hidden">Accuracy</span></div></div>
       </div>
     </div>
   </section>
 
-  <!-- How It Works -->
   <section id="how-it-works" class="py-24 px-6" style="background: var(--bg-primary);">
     <div class="max-w-4xl mx-auto">
-      <h2 class="text-3xl font-bold text-center mb-2" style="color: var(--text-primary);">
-        <span class="zh">使用流程</span>
-        <span class="en hidden">How It Works</span>
-      </h2>
-      <p class="text-center mb-12 text-sm" style="color: var(--text-muted);">
-        <span class="zh">三步完成，从照片到食谱只需几秒钟</span>
-        <span class="en hidden">Three simple steps</span>
-      </p>
-      
+      <h2 class="text-3xl font-bold text-center mb-2" style="color: var(--text-primary);"><span class="zh">使用流程</span><span class="en hidden">How It Works</span></h2>
+      <p class="text-center mb-12 text-sm" style="color: var(--text-muted);"><span class="zh">三步完成</span><span class="en hidden">Three steps</span></p>
       <div class="grid md:grid-cols-3 gap-4">
-        <div class="card rounded-2xl p-6 text-center">
-          <div class="step-num mx-auto mb-4">1</div>
-          <h3 class="text-base font-semibold mb-2" style="color: var(--text-primary);">
-            <span class="zh">📷 上传照片</span>
-            <span class="en hidden">📷 Upload Photo</span>
-          </h3>
-          <p class="text-sm" style="color: var(--text-muted);">
-            <span class="zh">拍照或上传食物照片</span>
-            <span class="en hidden">Take or upload any food image</span>
-          </p>
-        </div>
-        <div class="card rounded-2xl p-6 text-center">
-          <div class="step-num mx-auto mb-4">2</div>
-          <h3 class="text-base font-semibold mb-2" style="color: var(--text-primary);">
-            <span class="zh">🤖 AI 识别</span>
-            <span class="en hidden">🤖 AI Recognition</span>
-          </h3>
-          <p class="text-sm" style="color: var(--text-muted);">
-            <span class="zh">智能识别食材和菜品</span>
-            <span class="en hidden">AI identifies ingredients & dish</span>
-          </p>
-        </div>
-        <div class="card rounded-2xl p-6 text-center">
-          <div class="step-num mx-auto mb-4">3</div>
-          <h3 class="text-base font-semibold mb-2" style="color: var(--text-primary);">
-            <span class="zh">📝 获取食谱</span>
-            <span class="en hidden">📝 Get Recipe</span>
-          </h3>
-          <p class="text-sm" style="color: var(--text-muted);">
-            <span class="zh">生成完整食谱</span>
-            <span class="en hidden">Get complete recipe</span>
-          </p>
-        </div>
+        <div class="card rounded-2xl p-6 text-center"><div class="step-num mx-auto mb-4">1</div><h3 class="text-base font-semibold mb-2" style="color: var(--text-primary);"><span class="zh">📷 上传照片</span><span class="en hidden">📷 Upload</span></h3><p class="text-sm" style="color: var(--text-muted);"><span class="zh">拍照上传</span><span class="en hidden">Take photo</span></p></div>
+        <div class="card rounded-2xl p-6 text-center"><div class="step-num mx-auto mb-4">2</div><h3 class="text-base font-semibold mb-2" style="color: var(--text-primary);"><span class="zh">🤖 AI 识别</span><span class="en hidden">🤖 AI</span></h3><p class="text-sm" style="color: var(--text-muted);"><span class="zh">智能识别</span><span class="en hidden">Identify</span></p></div>
+        <div class="card rounded-2xl p-6 text-center"><div class="step-num mx-auto mb-4">3</div><h3 class="text-base font-semibold mb-2" style="color: var(--text-primary);"><span class="zh">📝 获取食谱</span><span class="en hidden">📝 Recipe</span></h3><p class="text-sm" style="color: var(--text-muted);"><span class="zh">生成食谱</span><span class="en hidden">Get recipe</span></p></div>
       </div>
     </div>
   </section>
 
-  <!-- Features -->
   <section id="features" class="py-24 px-6" style="background: var(--bg-secondary);">
     <div class="max-w-4xl mx-auto">
-      <h2 class="text-3xl font-bold text-center mb-2" style="color: var(--text-primary);">
-        <span class="zh">核心功能</span>
-        <span class="en hidden">Features</span>
-      </h2>
-      <p class="text-center mb-12 text-sm" style="color: var(--text-muted);">
-        <span class="zh">强大的 AI 技术</span>
-        <span class="en hidden">Powerful AI technology</span>
-      </p>
-      
+      <h2 class="text-3xl font-bold text-center mb-2" style="color: var(--text-primary);"><span class="zh">核心功能</span><span class="en hidden">Features</span></h2>
+      <p class="text-center mb-12 text-sm" style="color: var(--text-muted);"><span class="zh">AI 技术</span><span class="en hidden">AI Power</span></p>
       <div class="grid md:grid-cols-2 gap-4">
-        <div class="card rounded-xl p-5 flex items-start gap-4">
-          <div class="icon-box flex-shrink-0">🔍</div>
-          <div>
-            <h3 class="text-sm font-semibold mb-1" style="color: var(--text-primary);"><span class="zh">精准识别</span><span class="en hidden">Precise Recognition</span></h3>
-            <p class="text-sm" style="color: var(--text-muted);"><span class="zh">500+ 食材和菜品</span><span class="en hidden">500+ ingredients & dishes</span></p>
-          </div>
-        </div>
-        <div class="card rounded-xl p-5 flex items-start gap-4">
-          <div class="icon-box flex-shrink-0">⚡</div>
-          <div>
-            <h3 class="text-sm font-semibold mb-1" style="color: var(--text-primary);"><span class="zh">秒级生成</span><span class="en hidden">Instant</span></h3>
-            <p class="text-sm" style="color: var(--text-muted);"><span class="zh">几秒钟完成</span><span class="en hidden">Complete in seconds</span></p>
-          </div>
-        </div>
-        <div class="card rounded-xl p-5 flex items-start gap-4">
-          <div class="icon-box flex-shrink-0">🌍</div>
-          <div>
-            <h3 class="text-sm font-semibold mb-1" style="color: var(--text-primary);"><span class="zh">全球菜系</span><span class="en hidden">Global Cuisines</span></h3>
-            <p class="text-sm" style="color: var(--text-muted);"><span class="zh">中西日韩等</span><span class="en hidden">Chinese, Western, Japanese...</span></p>
-          </div>
-        </div>
-        <div class="card rounded-xl p-5 flex items-start gap-4">
-          <div class="icon-box flex-shrink-0">📊</div>
-          <div>
-            <h3 class="text-sm font-semibold mb-1" style="color: var(--text-primary);"><span class="zh">营养分析</span><span class="en hidden">Nutrition</span></h3>
-            <p class="text-sm" style="color: var(--text-muted);"><span class="zh">卡路里估算</span><span class="en hidden">Calories & nutrition</span></p>
-          </div>
-        </div>
-        <div class="card rounded-xl p-5 flex items-start gap-4">
-          <div class="icon-box flex-shrink-0">📱</div>
-          <div>
-            <h3 class="text-sm font-semibold mb-1" style="color: var(--text-primary);"><span class="zh">全平台</span><span class="en hidden">All Platforms</span></h3>
-            <p class="text-sm" style="color: var(--text-muted);"><span class="zh">网页/iOS/Android</span><span class="en hidden">Web, iOS, Android</span></p>
-          </div>
-        </div>
-        <div class="card rounded-xl p-5 flex items-start gap-4">
-          <div class="icon-box flex-shrink-0">💾</div>
-          <div>
-            <h3 class="text-sm font-semibold mb-1" style="color: var(--text-primary);"><span class="zh">一键保存</span><span class="en hidden">Save & Share</span></h3>
-            <p class="text-sm" style="color: var(--text-muted);"><span class="zh">收藏和分享</span><span class="en hidden">Save & share recipes</span></p>
-          </div>
-        </div>
+        <div class="card rounded-xl p-5 flex items-start gap-4"><div class="icon-box flex-shrink-0">🔍</div><div><h3 class="text-sm font-semibold mb-1" style="color: var(--text-primary);"><span class="zh">精准识别</span><span class="en hidden">Precise</span></h3><p class="text-sm" style="color: var(--text-muted);"><span class="zh">500+ 食材</span><span class="en hidden">500+ items</span></p></div></div>
+        <div class="card rounded-xl p-5 flex items-start gap-4"><div class="icon-box flex-shrink-0">⚡</div><div><h3 class="text-sm font-semibold mb-1" style="color: var(--text-primary);"><span class="zh">秒级生成</span><span class="en hidden">Instant</span></h3><p class="text-sm" style="color: var(--text-muted);"><span class="zh">几秒钟</span><span class="en hidden">Seconds</span></p></div></div>
+        <div class="card rounded-xl p-5 flex items-start gap-4"><div class="icon-box flex-shrink-0">🌍</div><div><h3 class="text-sm font-semibold mb-1" style="color: var(--text-primary);"><span class="zh">全球菜系</span><span class="en hidden">Global</span></h3><p class="text-sm" style="color: var(--text-muted);"><span class="zh">中西日韩</span><span class="en hidden">All cuisines</span></p></div></div>
+        <div class="card rounded-xl p-5 flex items-start gap-4"><div class="icon-box flex-shrink-0">📊</div><div><h3 class="text-sm font-semibold mb-1" style="color: var(--text-primary);"><span class="zh">营养分析</span><span class="en hidden">Nutrition</span></h3><p class="text-sm" style="color: var(--text-muted);"><span class="zh">卡路里</span><span class="en hidden">Calories</span></p></div></div>
+        <div class="card rounded-xl p-5 flex items-start gap-4"><div class="icon-box flex-shrink-0">📱</div><div><h3 class="text-sm font-semibold mb-1" style="color: var(--text-primary);"><span class="zh">全平台</span><span class="en hidden">Mobile</span></h3><p class="text-sm" style="color: var(--text-muted);"><span class="zh">多设备</span><span class="en hidden">All devices</span></p></div></div>
+        <div class="card rounded-xl p-5 flex items-start gap-4"><div class="icon-box flex-shrink-0">💾</div><div><h3 class="text-sm font-semibold mb-1" style="color: var(--text-primary);"><span class="zh">一键保存</span><span class="en hidden">Save</span></h3><p class="text-sm" style="color: var(--text-muted);"><span class="zh">收藏分享</span><span class="en hidden">Save & share</span></p></div></div>
       </div>
     </div>
   </section>
 
-  <!-- Use Cases -->
   <section class="py-24 px-6" style="background: var(--bg-primary);">
     <div class="max-w-4xl mx-auto">
-      <h2 class="text-3xl font-bold text-center mb-2" style="color: var(--text-primary);">
-        <span class="zh">使用场景</span>
-        <span class="en hidden">Use Cases</span>
-      </h2>
-      <p class="text-center mb-12 text-sm" style="color: var(--text-muted);">
-        <span class="zh">无论什么场景，都能用到</span>
-        <span class="en hidden">Useful anywhere</span>
-      </p>
-      
+      <h2 class="text-3xl font-bold text-center mb-2" style="color: var(--text-primary);"><span class="zh">使用场景</span><span class="en hidden">Use Cases</span></h2>
+      <p class="text-center mb-12 text-sm" style="color: var(--text-muted);"><span class="zh">各种场景</span><span class="en hidden">Any scenario</span></p>
       <div class="grid md:grid-cols-3 gap-4">
-        <div class="card rounded-xl p-5">
-          <div class="text-3xl mb-3">🧊</div>
-          <h3 class="text-sm font-semibold mb-1" style="color: var(--text-primary);"><span class="zh">冰箱剩菜</span><span class="en hidden">Leftovers</span></h3>
-          <p class="text-sm" style="color: var(--text-muted);"><span class="zh">拍照→AI 告诉你能做什么</span><span class="en hidden">Snap → AI suggests recipe</span></p>
-        </div>
-        <div class="card rounded-xl p-5">
-          <div class="text-3xl mb-3">🍽️</div>
-          <h3 class="text-sm font-semibold mb-1" style="color: var(--text-primary);"><span class="zh">餐厅复刻</span><span class="en hidden">Restaurant</span></h3>
-          <p class="text-sm" style="color: var(--text-muted);"><span class="zh">好吃？在家复刻</span><span class="en hidden">Recreate at home</span></p>
-        </div>
-        <div class="card rounded-xl p-5">
-          <div class="text-3xl mb-3">🎵</div>
-          <h3 class="text-sm font-semibold mb-1" style="color: var(--text-primary);"><span class="zh">社交媒体</span><span class="en hidden">Social Media</span></h3>
-          <p class="text-sm" style="color: var(--text-muted);"><span class="zh">链接→自动提取</span><span class="en hidden">Link → Auto extract</span></p>
-        </div>
-        <div class="card rounded-xl p-5">
-          <div class="text-3xl mb-3">🛒</div>
-          <h3 class="text-sm font-semibold mb-1" style="color: var(--text-primary);"><span class="zh">买菜灵感</span><span class="en hidden">Shopping</span></h3>
-          <p class="text-sm" style="color: var(--text-muted);"><span class="zh">新奇食材→食谱</span><span class="en hidden">Ingredient → Recipe</span></p>
-        </div>
-        <div class="card rounded-xl p-5">
-          <div class="text-3xl mb-3">👨‍👩‍👧</div>
-          <h3 class="text-sm font-semibold mb-1" style="color: var(--text-primary);"><span class="zh">家庭料理</span><span class="en hidden">Home Cooking</span></h3>
-          <p class="text-sm" style="color: var(--text-muted);"><span class="zh">每日菜单推荐</span><span class="en hidden">Daily suggestions</span></p>
-        </div>
-        <div class="card rounded-xl p-5">
-          <div class="text-3xl mb-3">🥗</div>
-          <h3 class="text-sm font-semibold mb-1" style="color: var(--text-primary);"><span class="zh">健身饮食</span><span class="en hidden">Fitness</span></h3>
-          <p class="text-sm" style="color: var(--text-muted);"><span class="zh">低卡健康食谱</span><span class="en hidden">Low-calorie recipes</span></p>
-        </div>
+        <div class="card rounded-xl p-5"><div class="text-3xl mb-3">🧊</div><h3 class="text-sm font-semibold mb-1" style="color: var(--text-primary);"><span class="zh">冰箱剩菜</span><span class="en hidden">Leftovers</span></h3><p class="text-sm" style="color: var(--text-muted);"><span class="zh">AI 推荐</span><span class="en hidden">AI suggests</span></p></div>
+        <div class="card rounded-xl p-5"><div class="text-3xl mb-3">🍽️</div><h3 class="text-sm font-semibold mb-1" style="color: var(--text-primary);"><span class="zh">餐厅复刻</span><span class="en hidden">Restaurant</span></h3><p class="text-sm" style="color: var(--text-muted);"><span class="zh">在家做</span><span class="en hidden">Recreate</span></p></div>
+        <div class="card rounded-xl p-5"><div class="text-3xl mb-3">🎵</div><h3 class="text-sm font-semibold mb-1" style="color: var(--text-primary);"><span class="zh">社交媒体</span><span class="en hidden">Social</span></h3><p class="text-sm" style="color: var(--text-muted);"><span class="zh">链接提取</span><span class="en hidden">Extract</span></p></div>
+        <div class="card rounded-xl p-5"><div class="text-3xl mb-3">🛒</div><h3 class="text-sm font-semibold mb-1" style="color: var(--text-primary);"><span class="zh">买菜灵感</span><span class="en hidden">Shopping</span></h3><p class="text-sm" style="color: var(--text-muted);"><span class="zh">食谱创意</span><span class="en hidden">Ideas</span></p></div>
+        <div class="card rounded-xl p-5"><div class="text-3xl mb-3">👨‍👩‍👧</div><h3 class="text-sm font-semibold mb-1" style="color: var(--text-primary);"><span class="zh">家庭料理</span><span class="en hidden">Home</span></h3><p class="text-sm" style="color: var(--text-muted);"><span class="zh">每日推荐</span><span class="en hidden">Daily</span></p></div>
+        <div class="card rounded-xl p-5"><div class="text-3xl mb-3">🥗</div><h3 class="text-sm font-semibold mb-1" style="color: var(--text-primary);"><span class="zh">健身饮食</span><span class="en hidden">Fitness</span></h3><p class="text-sm" style="color: var(--text-muted);"><span class="zh">低卡食谱</span><span class="en hidden">Low-cal</span></p></div>
       </div>
     </div>
   </section>
 
-  <!-- Pricing -->
   <section id="pricing" class="py-24 px-6" style="background: var(--bg-secondary);">
     <div class="max-w-3xl mx-auto">
-      <h2 class="text-3xl font-bold text-center mb-2" style="color: var(--text-primary);">
-        <span class="zh">价格方案</span>
-        <span class="en hidden">Pricing</span>
-      </h2>
-      <p class="text-center mb-10 text-sm" style="color: var(--text-muted);">
-        <span class="zh">选择适合你的方案</span>
-        <span class="en hidden">Choose your plan</span>
-      </p>
-      
+      <h2 class="text-3xl font-bold text-center mb-2" style="color: var(--text-primary);"><span class="zh">价格方案</span><span class="en hidden">Pricing</span></h2>
+      <p class="text-center mb-10 text-sm" style="color: var(--text-muted);"><span class="zh">选择你的方案</span><span class="en hidden">Choose plan</span></p>
       <div class="grid md:grid-cols-2 gap-4 max-w-lg mx-auto">
         <div class="card rounded-2xl p-6">
           <h3 class="text-base font-semibold mb-1" style="color: var(--text-primary);"><span class="zh">免费版</span><span class="en hidden">Free</span></h3>
           <div class="text-3xl font-bold mb-4" style="color: var(--text-primary);">$0 <span class="text-sm font-normal" style="color: var(--text-muted);">/forever</span></div>
           <ul class="space-y-2 mb-6 text-sm">
             <li class="flex items-center gap-2" style="color: var(--text-secondary);">✅ <span class="zh">每天 3 次</span><span class="en hidden">3/day</span></li>
-            <li class="flex items-center gap-2" style="color: var(--text-secondary);">✅ <span class="zh">基础食谱</span><span class="en hidden">Basic recipes</span></li>
+            <li class="flex items-center gap-2" style="color: var(--text-secondary);">✅ <span class="zh">基础食谱</span><span class="en hidden">Basic</span></li>
             <li class="flex items-center gap-2" style="color: var(--text-secondary);">✅ <span class="zh">中英文</span><span class="en hidden">CN/EN</span></li>
             <li class="flex items-center gap-2" style="color: var(--text-muted);">❌ <span class="zh">营养估算</span><span class="en hidden">Nutrition</span></li>
           </ul>
-          <a href="#waitlist" class="block w-full py-2.5 rounded-full border text-center text-sm font-medium" style="border-color: var(--border); color: var(--text-primary);">
-            <span class="zh">免费加入</span><span class="en hidden">Join Free</span>
-          </a>
+          <a href="#waitlist" class="block w-full py-2.5 rounded-full border text-center text-sm font-medium" style="border-color: var(--border); color: var(--text-primary);"><span class="zh">免费加入</span><span class="en hidden">Join Free</span></a>
         </div>
-        
         <div class="card rounded-2xl p-6 pricing-popular">
           <div class="text-xs font-medium mb-2" style="color: var(--accent);"><span class="zh">最受欢迎</span><span class="en hidden">POPULAR</span></div>
           <h3 class="text-base font-semibold mb-1" style="color: var(--text-primary);"><span class="zh">专业版</span><span class="en hidden">Pro</span></h3>
@@ -511,76 +208,48 @@
             <li class="flex items-center gap-2" style="color: var(--text-secondary);">✅ <span class="zh">优先队列</span><span class="en hidden">Priority</span></li>
             <li class="flex items-center gap-2" style="color: var(--text-secondary);">✅ <span class="zh">收藏保存</span><span class="en hidden">Save</span></li>
           </ul>
-          <a href="#waitlist" class="btn-primary block w-full py-2.5 rounded-full text-center text-sm font-medium">
-            <span class="zh">立即升级</span><span class="en hidden">Upgrade</span>
-          </a>
+          <a href="#waitlist" class="btn-primary block w-full py-2.5 rounded-full text-center text-sm font-medium"><span class="zh">立即升级</span><span class="en hidden">Upgrade</span></a>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Waitlist -->
   <section id="waitlist" class="py-24 px-6" style="background: var(--bg-primary);">
     <div class="max-w-md mx-auto text-center">
-      <h2 class="text-2xl font-bold mb-2" style="color: var(--text-primary);">
-        <span class="zh">加入等待列表</span>
-        <span class="en hidden">Join Waitlist</span>
-      </h2>
-      <p class="mb-8 text-sm" style="color: var(--text-muted);">
-        <span class="zh">首批用户享受专属优惠！</span>
-        <span class="en hidden">Get early access & discounts!</span>
-      </p>
-      
+      <h2 class="text-2xl font-bold mb-2" style="color: var(--text-primary);"><span class="zh">加入等待列表</span><span class="en hidden">Join Waitlist</span></h2>
+      <p class="mb-8 text-sm" style="color: var(--text-muted);"><span class="zh">首批用户专享优惠！</span><span class="en hidden">Early access!</span></p>
       <form id="waitlistForm" class="flex flex-col gap-3" onsubmit="handleSubmit(event)">
         <input type="email" id="email" required placeholder="your@email.com" class="w-full rounded-full px-5 py-3 text-sm" style="background: var(--bg-secondary); border: 1px solid var(--border); color: var(--text-primary);">
-        <button type="submit" class="btn-primary w-full py-3 rounded-full text-sm font-medium flex items-center justify-center gap-2">
-          <span id="btnText"><span class="zh">立即加入</span><span class="en hidden">Join</span></span>
-          <div id="spinner" class="spinner hidden"></div>
-        </button>
+        <button type="submit" class="btn-primary w-full py-3 rounded-full text-sm font-medium flex items-center justify-center gap-2"><span id="btnText"><span class="zh">立即加入</span><span class="en hidden">Join</span></span><div id="spinner" class="spinner hidden"></div></button>
       </form>
-      
-      <p id="successMsg" class="hidden mt-4 text-sm" style="color: #10b981;">
-        <span class="zh">✅ 已加入等待列表</span>
-        <span class="en hidden">✅ You're on the list!</span>
-      </p>
+      <p id="successMsg" class="hidden mt-4 text-sm" style="color: #10b981;"><span class="zh">✅ 已加入等待列表</span><span class="en hidden">✅ You're on the list!</span></p>
     </div>
   </section>
 
-  <!-- Footer -->
   <footer class="py-8 px-6" style="background: var(--bg-secondary); border-top: 1px solid var(--border);">
     <div class="max-w-5xl mx-auto text-center">
       <div class="flex items-center justify-center gap-2 mb-3">
-        <div class="w-6 h-6 rounded-lg flex items-center justify-center" style="background: var(--accent);">
-          <span class="text-white text-xs">🍳</span>
-        </div>
+        <div class="w-6 h-6 rounded-lg flex items-center justify-center" style="background: var(--accent);"><span class="text-white text-xs">🍳</span></div>
         <span class="text-sm font-medium" style="color: var(--text-primary);">RecipeAI</span>
       </div>
-      <p class="text-xs" style="color: var(--text-muted);">© 2026 RecipeAI. Powered by AI.</p>
+      <p class="text-xs" style="color: var(--text-muted);">© 2026 RecipeAI.</p>
     </div>
   </footer>
 
   <script>
-    // Theme toggle
+    function switchStyle(style) {
+      document.body.className = 'style-' + style + ' min-h-screen' + (localStorage.getItem('theme') === 'dark' ? ' theme-dark' : '');
+      document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('style' + style.charAt(0).toUpperCase() + style.slice(1)).classList.add('active');
+      localStorage.setItem('style', style);
+    }
+    
     function toggleTheme() {
-      const body = document.body;
-      const isDark = body.classList.contains('theme-dark');
-      
-      if (isDark) {
-        body.classList.remove('theme-dark');
-        body.classList.add('theme-light');
-      } else {
-        body.classList.remove('theme-light');
-        body.classList.add('theme-dark');
-      }
-      
+      const isDark = document.body.classList.contains('theme-dark');
+      document.body.classList.toggle('theme-dark');
       localStorage.setItem('theme', isDark ? 'light' : 'dark');
     }
     
-    // Init theme
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    document.body.classList.add('theme-' + savedTheme);
-    
-    // Language toggle
     function switchLang(lang) {
       document.querySelectorAll('.zh, .en').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.' + lang).forEach(el => el.classList.remove('hidden'));
@@ -589,10 +258,16 @@
       localStorage.setItem('lang', lang);
     }
     
+    const savedStyle = localStorage.getItem('style') || 'minimal';
+    switchStyle(savedStyle);
+    
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('theme-dark');
+    }
+    
     const savedLang = localStorage.getItem('lang') || 'zh';
     switchLang(savedLang);
     
-    // Waitlist form
     function handleSubmit(e) {
       e.preventDefault();
       const email = document.getElementById('email').value.trim();
